@@ -11,19 +11,19 @@ public class UrlStore {
 	     
 	   static class DbHelper extends SQLiteOpenHelper {
         private static final String DATABASE_NAME = "urlstore.db";
-        private static final int DATABASE_VERSION = 1;
+        private static final int DATABASE_VERSION = 2;
         
         private static final String URLSTORE_TABLE_CREATE =
                     "CREATE TABLE " + URLSTORE_TABLE_NAME + " (" +
-                    "_id INTEGER PRIMARY KEY, " +
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "URL TEXT," +
                     "BLAH TEXT);";
 
         DbHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
         }
-
-        @Override
+        
+         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(URLSTORE_TABLE_CREATE);
             ContentValues values = new ContentValues();
@@ -64,4 +64,14 @@ public class UrlStore {
     	return cursor;
     	
     }
+    public void addUrl(String url)
+    {
+    	SQLiteDatabase db = dbhelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("URL", url);         
+		db.insert(URLSTORE_TABLE_NAME, "URL", values);
+    }
+
+
 }
