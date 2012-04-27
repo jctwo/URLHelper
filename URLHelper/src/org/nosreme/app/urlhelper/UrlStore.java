@@ -28,7 +28,6 @@ public class UrlStore {
             db.execSQL(URLSTORE_TABLE_CREATE);
             ContentValues values = new ContentValues();
             values.put("URL", "http://www.nosreme.org");
-            values.put("BLAH", "asdf", value)
             values.put("_id", 1);            
 			db.insert(URLSTORE_TABLE_NAME, "URL", values);
             values.put("URL", "blah blah");
