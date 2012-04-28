@@ -2,6 +2,7 @@ package org.nosreme.app.urlhelper;
 
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.Context;
@@ -10,6 +11,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import org.nosreme.app.urlhelper.UrlStore;
@@ -40,7 +44,6 @@ public class URLHelperActivity extends ListActivity {
         		urlstore.addUrl(ai.toString());
         	}
         	*/
-      
         }
         
         Cursor urls = urlstore.getUrlCursor();
@@ -53,5 +56,38 @@ public class URLHelperActivity extends ListActivity {
         									   colFields,to));
         
         
+        ListView lv = getListView();
+        /* Thanks to tranbinh.bino@gmail.com in the thread at:
+         * http://groups.google.com/group/android-developers/browse_thread/thread/14ba131c3ebc49eb
+         * for this snippet. 
+         */
+        lv.setOnItemLongClickListener( new AdapterView.OnItemLongClickListener 
+        		(){ 
+        		                //@Override 
+        		                
+        		                public boolean onItemLongClick(AdapterView<?> av, View v, int	pos, long id) { 
+        		                        onLongListItemClick(v,pos,id); 
+        		                        return true; 
+        		        } 
+        		}); 
+
+    }
+    
+    private void onLongListItemClick(View v, int pos, long id)
+    {
+   	AlertDialog dlg = new AlertDialog.Builder(this).create();
+    	
+    	dlg.setMessage("List item long click" + Long.toString(id));
+    	dlg.show();
+    }
+    
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id)
+    {
+ 
+    	AlertDialog dlg = new AlertDialog.Builder(this).create();
+    	
+    	dlg.setMessage("List item click" + Long.toString(id));
+    	dlg.show();
     }
 }
