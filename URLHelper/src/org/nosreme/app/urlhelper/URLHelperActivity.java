@@ -1,7 +1,13 @@
 package org.nosreme.app.urlhelper;
 
+import java.util.List;
+
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.SimpleCursorAdapter;
@@ -22,10 +28,19 @@ public class URLHelperActivity extends ListActivity {
         if (intent.getAction().equals(android.content.Intent.ACTION_VIEW))
         {
         	urlstore.addUrl(intent.getDataString());
-        }
-        else
-        {
-        	urlstore.addUrl(intent.getAction());
+        	/*
+        	urlstore.addUrl(intent.toString());
+        	PackageManager pm = getPackageManager();
+        	intent.setComponent(null);
+        	List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
+        	for (ResolveInfo ri: activities)
+        	{
+        		ActivityInfo ai = ri.activityInfo;
+        		urlstore.addUrl(ai.packageName);
+        		urlstore.addUrl(ai.toString());
+        	}
+        	*/
+      
         }
         
         Cursor urls = urlstore.getUrlCursor();
