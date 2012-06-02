@@ -56,7 +56,7 @@ public class URLHelperActivity extends ListActivity {
         int[] to = { R.id.tv1 };
         
         setListAdapter(new SimpleCursorAdapter(getApplicationContext(),
-        									   R.layout.main, urls, 
+        									   R.layout.urllist, urls, 
         									   colFields,to));
         
         
