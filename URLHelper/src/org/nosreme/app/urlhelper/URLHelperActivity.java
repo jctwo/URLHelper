@@ -11,6 +11,7 @@ import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -90,27 +91,31 @@ public class URLHelperActivity extends ListActivity {
     	intent.setComponent(null);
         UrlStore urlstore = new UrlStore(getApplicationContext());
     	
-    	Uri uri = Uri.parse(urlstore.getUrl(id));
+        String urlString = urlstore.getUrl(id);
+    	Uri uri = Uri.parse(urlString);
     	
     	
     	intent.setData(uri);
     	intent.setAction(android.content.Intent.ACTION_VIEW);
     	List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
-//    	String msg = "Possible handlers:\n";
-//    	String pkg = null;
+    	String pkg = null;
+    	String name = null;
+    	Log.i("URLHelper", "Searching for handler for " + urlString);
     	for (ResolveInfo ri: activities)
     	{
     		ActivityInfo ai = ri.activityInfo;
-//    		msg = msg + ai.packageName + "/" + ai.applicationInfo.className + "\n";
-//    		msg = msg + ai.name + "\n";
+    		Log.i("URLHelper", "Activity: " + ai.packageName + "/" + ai.applicationInfo.className 
+    				+ "/" + ai.name);
     		if (!ai.name.startsWith("org.nosreme.app.urlhelper"))
     		{
-    	    	intent.setClassName(ai.packageName, ai.name);
-    			break;
+    			if (pkg == null)
+    			{
+    			    pkg = ai.packageName;
+    			    name = ai.name;
+    			}
     		}
-    	
-//    		urlstore.addUrl(ai.packageName);
     	}
+    	intent.setClassName(pkg, name);
 
     	startActivity(intent);
 //    	AlertDialog dlg = new AlertDialog.Builder(this).create();
