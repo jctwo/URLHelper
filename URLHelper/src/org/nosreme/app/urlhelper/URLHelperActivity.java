@@ -130,7 +130,7 @@ public class URLHelperActivity extends ListActivity {
     	{
     		Intent chooserIntent = new Intent();
     		chooserIntent.setAction(Intent.ACTION_CHOOSER);
-    		if (0) {
+    		if (false) {
     			/* TODO:
     			 * This is a way to add activities to the chooser; but to
     			 * filter out there's not much I can do without re-implementing
