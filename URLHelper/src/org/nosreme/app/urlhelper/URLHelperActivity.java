@@ -94,13 +94,16 @@ public class URLHelperActivity extends ListActivity {
         String urlString = urlstore.getUrl(id);
     	Uri uri = Uri.parse(urlString);
     	
-    	
     	intent.setData(uri);
     	intent.setAction(android.content.Intent.ACTION_VIEW);
     	List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
     	String pkg = null;
     	String name = null;
     	Log.i("URLHelper", "Searching for handler for " + urlString);
+    	
+    	int activityCount = activities.size();
+    	String[] activitylist = new String[activityCount-1];
+    	int activitiesFound = 0;
     	for (ResolveInfo ri: activities)
     	{
     		ActivityInfo ai = ri.activityInfo;
@@ -113,9 +116,19 @@ public class URLHelperActivity extends ListActivity {
     			    pkg = ai.packageName;
     			    name = ai.name;
     			}
+    			activitylist[activitiesFound++] = pkg + "." + name;
     		}
     	}
-    	intent.setClassName(pkg, name);
+    	
+    	/* If more than one found, create a popup to ask. */
+    	if (activitiesFound > 1)
+    	{
+    		intent = Intent.createChooser(intent, "Select browser");
+    		
+    	} else {
+    		/* Only one, so use it directly. */
+    	    intent.setClassName(pkg, name);
+    	}
 
     	startActivity(intent);
 //    	AlertDialog dlg = new AlertDialog.Builder(this).create();

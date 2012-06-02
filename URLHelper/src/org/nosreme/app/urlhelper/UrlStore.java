@@ -8,18 +8,28 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class UrlStore {
 	   private static final String URLSTORE_TABLE_NAME = "urls";
+	   private static final String HANDLER_TABLE_NAME = "handlers";
 	     
 	   static class DbHelper extends SQLiteOpenHelper {
-        private static final String DATABASE_NAME = "urlstore2.db";
-        private static final int DATABASE_VERSION = 2;
+        private static final String DATABASE_NAME = "urlstore.db";
+        private static final int DATABASE_VERSION = 1;
         
         private static final String URLSTORE_TABLE_CREATE =
-                    "CREATE TABLE " + URLSTORE_TABLE_NAME + " (" +
+                "CREATE TABLE " + URLSTORE_TABLE_NAME + " (" +
                     "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "url TEXT," +
                     "time INTEGER," +
                     "seen INTEGER" +
-                    ");";
+                ");\n" +
+                /* handler table stores a list of activities which
+                 * we've seen, with a preference ordering.
+                 */
+                "CREATE TABLE " + HANDLER_TABLE_NAME + " (" +
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "packageName TEXT," +
+                    "name TEXT," +
+                    "order INTEGER UNIQUE," +
+                ");";
 
         DbHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -39,8 +49,7 @@ public class UrlStore {
 
             // Kills the table and existing data
             db.execSQL("DROP TABLE IF EXISTS " + URLSTORE_TABLE_NAME);
-            db.execSQL("DROP TABLE IF EXISTS urls");
-            db.execSQL("DROP TABLE IF EXISTS URLS");
+            db.execSQL("DROP TABLE IF EXISTS " + HANDLER_TABLE_NAME);
 
             // Recreates the database with a new version
             onCreate(db);
