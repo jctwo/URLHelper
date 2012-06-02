@@ -79,7 +79,8 @@ public class UrlStore {
     public String getUrl(long id) 
     {
     	SQLiteDatabase db = dbhelper.getReadableDatabase();
-    	Cursor cursor = db.query("URL", cols, "_id = " + Long.toString(id), null, null, null, null);
+    	Cursor cursor = db.query(URLSTORE_TABLE_NAME, cols, "_id = " + Long.toString(id), null, null, null, null);
+    	cursor.moveToFirst();
     	return cursor.getString(1);
     	
     }
