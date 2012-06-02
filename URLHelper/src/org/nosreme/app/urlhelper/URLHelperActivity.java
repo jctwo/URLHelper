@@ -11,6 +11,7 @@ import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,6 +22,8 @@ import org.nosreme.app.urlhelper.UrlStore;
 
 public class URLHelperActivity extends ListActivity {
 	private final String[] colFields = { "url", "seen" };
+	
+	private final int REQ_CHOOSE_INTENT = 0;
 	
     /** Called when the activity is first created. */
     @Override
@@ -102,7 +105,7 @@ public class URLHelperActivity extends ListActivity {
     	Log.i("URLHelper", "Searching for handler for " + urlString);
     	
     	int activityCount = activities.size();
-    	String[] activitylist = new String[activityCount-1];
+    	Parcelable[] activitylist = new Parcelable[activityCount-1];
     	int activitiesFound = 0;
     	for (ResolveInfo ri: activities)
     	{
@@ -116,24 +119,52 @@ public class URLHelperActivity extends ListActivity {
     			    pkg = ai.packageName;
     			    name = ai.name;
     			}
-    			activitylist[activitiesFound++] = pkg + "." + name;
+    			Intent actIntent = new Intent();
+    			actIntent.setClassName(ai.packageName, ai.name);
+    			activitylist[activitiesFound++] = actIntent;
     		}
     	}
     	
     	/* If more than one found, create a popup to ask. */
     	if (activitiesFound > 1)
     	{
-    		intent = Intent.createChooser(intent, "Select browser");
+    		Intent chooserIntent = new Intent();
+    		chooserIntent.setAction(Intent.ACTION_CHOOSER);
+    		if (0) {
+    			/* TODO:
+    			 * This is a way to add activities to the chooser; but to
+    			 * filter out there's not much I can do without re-implementing
+    			 * the chooser.  Some useful references when I get around to doing
+    			 * that:
+    			 * 
+    			 * http://pilcrowpipe.blogspot.co.uk/2012/01/creating-custom-android-intent-chooser.html
+    			 * http://stackoverflow.com/questions/5734678/custom-filtering-of-intent-chooser-based-on-installed-android-package-name
+    			 */
+    		    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, activitylist);
+    		}
+
+    		chooserIntent.putExtra(Intent.EXTRA_INTENT, intent);
     		
+    		startActivityForResult(chooserIntent, REQ_CHOOSE_INTENT);    		
     	} else {
     		/* Only one, so use it directly. */
     	    intent.setClassName(pkg, name);
+        	startActivity(intent);
     	}
 
-    	startActivity(intent);
 //    	AlertDialog dlg = new AlertDialog.Builder(this).create();
     	
 //    	dlg.setMessage(msg);
 //    	dlg.show();
+    }
+    protected void onActivityResult(int requestCode, int resultCode,
+            Intent data) {
+    	if (requestCode == REQ_CHOOSE_INTENT)
+    	{
+    		Log.i("URLHandler", "Got activity result");
+    		if (resultCode == RESULT_OK) {
+    			startActivity(data);
+    		}
+    	}
     }
 }
