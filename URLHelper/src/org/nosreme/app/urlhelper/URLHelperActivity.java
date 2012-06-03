@@ -15,9 +15,12 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.ToggleButton;
 
 import org.nosreme.app.urlhelper.UrlStore;
 
@@ -114,22 +117,46 @@ public class URLHelperActivity extends ListActivity {
         }
         
         /* Check whether we're in offline mode. */
-	    SharedPreferences prefs = getSharedPreferences("settings", 0);
-
-        if (prefs.getBoolean("offline", true))
-        {
-        	showList(urlstore);
-        }
-        else
-        {
-        	/* If online, simply relaunch it. */
-        	launchUrl(intent.getDataString());
-        }
+        SharedPreferences prefs = getSharedPreferences("settings", 0);
+        int count = prefs.getInt("count", 0);
+        count += 1;
+        prefs.edit().putInt("count", count).commit();
+        Log.v("URLHandler", "Next count: " + prefs.getInt("count", 0));
+        boolean offlineSetting = prefs.getBoolean("offline", true);
+    	Log.v("URLHandler", "offline setting: " + offlineSetting);
+	    setContentView(R.layout.main);
+	    
+        ToggleButton button = (ToggleButton) findViewById(R.id.toggleOffline);
+    	Log.v("URLHandler", "button id: " + button.getId());
+        
+        button.setChecked(offlineSetting);
+        Log.v("URLHandler", "new button state: " + button.isChecked());
+        button.forceLayout();
+    	/* If online, simply relaunch it. */
+    	if (intent.getAction().equals(android.content.Intent.ACTION_VIEW) && !offlineSetting)
+    	{
+    	    launchUrl(intent.getDataString());
+    	}
+    	else
+    	{
+    		showList(urlstore);
+    	}
+        	
     }
+    public void ontoggle(View v)
+    {
+    	ToggleButton button = (ToggleButton)v;
+    	boolean isChecked = button.isChecked();
 
+    	SharedPreferences prefs = getSharedPreferences("settings", 0);
+    	Log.v("URLHandler", "on click value: " + isChecked + " ... " + button.getId());
+        prefs.edit().putBoolean("offline", isChecked).commit();
+    	Log.v("URLHandler", "committed (count = " + prefs.getInt("count", -1));            	
+    };
+    
 	private void showList(UrlStore urlstore) {
 		Cursor urls = urlstore.getUrlCursor();
-		setContentView(R.layout.main);
+//		setContentView(R.layout.main);
         
         //setContentView(R.layout.main);
         int[] to = { R.id.tv1 };
