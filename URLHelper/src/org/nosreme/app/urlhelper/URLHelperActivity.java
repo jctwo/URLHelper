@@ -129,6 +129,7 @@ public class URLHelperActivity extends ListActivity {
 
 	private void showList(UrlStore urlstore) {
 		Cursor urls = urlstore.getUrlCursor();
+		setContentView(R.layout.main);
         
         //setContentView(R.layout.main);
         int[] to = { R.id.tv1 };
@@ -156,7 +157,7 @@ public class URLHelperActivity extends ListActivity {
     
     private void onLongListItemClick(View v, int pos, long id)
     {
-   	AlertDialog dlg = new AlertDialog.Builder(this).create();
+   	    AlertDialog dlg = new AlertDialog.Builder(this).create();
     	
     	dlg.setMessage("List item long click" + Long.toString(id));
     	dlg.show();
@@ -165,13 +166,13 @@ public class URLHelperActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id)
     {
- 
         UrlStore urlstore = new UrlStore(getApplicationContext());
     	
         String urlString = urlstore.getUrl(id);
 
         launchUrl(urlString);
     }
+    
     protected void onActivityResult(int requestCode, int resultCode,
             Intent data) {
     	if (requestCode == REQ_CHOOSE_INTENT)

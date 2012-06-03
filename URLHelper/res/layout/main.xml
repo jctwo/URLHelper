@@ -11,5 +11,10 @@
         android:text="ToggleButton"
         android:textOff="Passthrough"
         android:textOn="Saving" />
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+    </ListView>
 
 </LinearLayout>
