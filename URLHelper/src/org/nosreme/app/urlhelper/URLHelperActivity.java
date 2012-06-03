@@ -5,6 +5,7 @@ import java.util.List;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -24,81 +25,21 @@ public class URLHelperActivity extends ListActivity {
 	private final String[] colFields = { "url", "seen" };
 	
 	private final int REQ_CHOOSE_INTENT = 0;
-	
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
-        UrlStore urlstore = new UrlStore(getApplicationContext());
 
-        Intent intent = getIntent();
-        if (intent.getAction().equals(android.content.Intent.ACTION_VIEW))
-        {
-        	urlstore.addUrl(intent.getDataString());
-        	/*
-        	urlstore.addUrl(intent.toString());
-        	PackageManager pm = getPackageManager();
-        	intent.setComponent(null);
-        	List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
-        	for (ResolveInfo ri: activities)
-        	{
-        		ActivityInfo ai = ri.activityInfo;
-        		urlstore.addUrl(ai.packageName);
-        		urlstore.addUrl(ai.toString());
-        	}
-        	*/
-        }
-        
-        Cursor urls = urlstore.getUrlCursor();
-        
-        //setContentView(R.layout.main);
-        int[] to = { R.id.tv1 };
-        
-        setListAdapter(new SimpleCursorAdapter(getApplicationContext(),
-        									   R.layout.urllist, urls, 
-        									   colFields,to));
-        
-        
-        ListView lv = getListView();
-        /* Thanks to tranbinh.bino@gmail.com in the thread at:
-         * http://groups.google.com/group/android-developers/browse_thread/thread/14ba131c3ebc49eb
-         * for this snippet. 
-         */
-        lv.setOnItemLongClickListener( new AdapterView.OnItemLongClickListener 
-        		(){ 
-        		                //@Override 
-        		                
-        		                public boolean onItemLongClick(AdapterView<?> av, View v, int	pos, long id) { 
-        		                        onLongListItemClick(v,pos,id); 
-        		                        return true; 
-        		        } 
-        		}); 
-
-    }
-    
-    private void onLongListItemClick(View v, int pos, long id)
-    {
-   	AlertDialog dlg = new AlertDialog.Builder(this).create();
-    	
-    	dlg.setMessage("List item long click" + Long.toString(id));
-    	dlg.show();
-    }
-    
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id)
-    {
- 
+	/* Launch a URL using the configured browser. */
+	private void launchUrl(String urlString)
+	{
     	PackageManager pm = getPackageManager();
+    	Uri uri = Uri.parse(urlString);
     	Intent intent = new Intent();
     	intent.setComponent(null);
-        UrlStore urlstore = new UrlStore(getApplicationContext());
-    	
-        String urlString = urlstore.getUrl(id);
-    	Uri uri = Uri.parse(urlString);
     	
     	intent.setData(uri);
     	intent.setAction(android.content.Intent.ACTION_VIEW);
+    	
+    	/* Ask the system for possible activities which will handle this URL.
+    	 * This is likely to include us, so we want to filter it out.
+    	 */
     	List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
     	String pkg = null;
     	String name = null;
@@ -114,8 +55,10 @@ public class URLHelperActivity extends ListActivity {
     				+ "/" + ai.name);
     		if (!ai.name.startsWith("org.nosreme.app.urlhelper"))
     		{
+    			/* It's an activity which isn't this one, so add it to the list. */
     			if (pkg == null)
     			{
+    				/* If it's the first interesting one, save the details. */
     			    pkg = ai.packageName;
     			    name = ai.name;
     			}
@@ -145,6 +88,9 @@ public class URLHelperActivity extends ListActivity {
 
     		chooserIntent.putExtra(Intent.EXTRA_INTENT, intent);
     		
+    		/* This will create the system chooser, and return the result in onActivityResult
+    		 * below (when we'll actually launch it).
+    		 */
     		startActivityForResult(chooserIntent, REQ_CHOOSE_INTENT);    		
     	} else {
     		/* Only one, so use it directly. */
@@ -152,10 +98,79 @@ public class URLHelperActivity extends ListActivity {
         	startActivity(intent);
     	}
 
-//    	AlertDialog dlg = new AlertDialog.Builder(this).create();
+	}
+	
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        UrlStore urlstore = new UrlStore(getApplicationContext());
+
+        Intent intent = getIntent();
+        if (intent.getAction().equals(android.content.Intent.ACTION_VIEW))
+        {
+        	urlstore.addUrl(intent.getDataString());
+        }
+        
+        /* Check whether we're in offline mode. */
+	    SharedPreferences prefs = getSharedPreferences("settings", 0);
+
+        if (prefs.getBoolean("offline", true))
+        {
+        	showList(urlstore);
+        }
+        else
+        {
+        	/* If online, simply relaunch it. */
+        	launchUrl(intent.getDataString());
+        }
+    }
+
+	private void showList(UrlStore urlstore) {
+		Cursor urls = urlstore.getUrlCursor();
+        
+        //setContentView(R.layout.main);
+        int[] to = { R.id.tv1 };
+        
+        setListAdapter(new SimpleCursorAdapter(getApplicationContext(),
+        									   R.layout.urllist, urls, 
+        									   colFields,to));
+        
+        
+        ListView lv = getListView();
+        /* Thanks to tranbinh.bino@gmail.com in the thread at:
+         * http://groups.google.com/group/android-developers/browse_thread/thread/14ba131c3ebc49eb
+         * for this snippet. 
+         */
+        lv.setOnItemLongClickListener( new AdapterView.OnItemLongClickListener 
+        		(){ 
+        		                //@Override 
+        		                
+        		                public boolean onItemLongClick(AdapterView<?> av, View v, int	pos, long id) { 
+        		                        onLongListItemClick(v,pos,id); 
+        		                        return true; 
+        		        } 
+        		});
+	}
+    
+    private void onLongListItemClick(View v, int pos, long id)
+    {
+   	AlertDialog dlg = new AlertDialog.Builder(this).create();
     	
-//    	dlg.setMessage(msg);
-//    	dlg.show();
+    	dlg.setMessage("List item long click" + Long.toString(id));
+    	dlg.show();
+    }
+    
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id)
+    {
+ 
+        UrlStore urlstore = new UrlStore(getApplicationContext());
+    	
+        String urlString = urlstore.getUrl(id);
+
+        launchUrl(urlString);
     }
     protected void onActivityResult(int requestCode, int resultCode,
             Intent data) {
