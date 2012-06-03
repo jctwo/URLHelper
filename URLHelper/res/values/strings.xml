@@ -3,5 +3,6 @@
 
     <string name="hello">Hello World, URLHelperActivity!</string>
     <string name="app_name">URLHelper</string>
+    <string name="settingsName">urlSettings</string>
 
 </resources>
