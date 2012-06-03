@@ -118,20 +118,24 @@ public class URLHelperActivity extends ListActivity {
         
         /* Check whether we're in offline mode. */
         SharedPreferences prefs = getSharedPreferences("settings", 0);
-        int count = prefs.getInt("count", 0);
-        count += 1;
-        prefs.edit().putInt("count", count).commit();
-        Log.v("URLHandler", "Next count: " + prefs.getInt("count", 0));
         boolean offlineSetting = prefs.getBoolean("offline", true);
-    	Log.v("URLHandler", "offline setting: " + offlineSetting);
-	    setContentView(R.layout.main);
+ 	    setContentView(R.layout.main);
 	    
         ToggleButton button = (ToggleButton) findViewById(R.id.toggleOffline);
-    	Log.v("URLHandler", "button id: " + button.getId());
-        
         button.setChecked(offlineSetting);
-        Log.v("URLHandler", "new button state: " + button.isChecked());
-        button.forceLayout();
+        button.setOnCheckedChangeListener(new OnCheckedChangeListener()
+        {
+
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+		    	SharedPreferences prefs = getSharedPreferences("settings", 0);
+		    	Log.v("URLHandler", "on click value: " + isChecked);
+		        prefs.edit().putBoolean("offline", isChecked).commit();
+		    	Log.v("URLHandler", "committed (count = " + prefs.getInt("count", -1));				
+			}
+        	
+        });
+        
     	/* If online, simply relaunch it. */
     	if (intent.getAction().equals(android.content.Intent.ACTION_VIEW) && !offlineSetting)
     	{
@@ -143,23 +147,11 @@ public class URLHelperActivity extends ListActivity {
     	}
         	
     }
-    public void ontoggle(View v)
-    {
-    	ToggleButton button = (ToggleButton)v;
-    	boolean isChecked = button.isChecked();
-
-    	SharedPreferences prefs = getSharedPreferences("settings", 0);
-    	Log.v("URLHandler", "on click value: " + isChecked + " ... " + button.getId());
-        prefs.edit().putBoolean("offline", isChecked).commit();
-    	Log.v("URLHandler", "committed (count = " + prefs.getInt("count", -1));            	
-    };
     
 	private void showList(UrlStore urlstore) {
 		Cursor urls = urlstore.getUrlCursor();
-//		setContentView(R.layout.main);
-        
-        //setContentView(R.layout.main);
-        int[] to = { R.id.tv1 };
+
+		int[] to = { R.id.tv1 };
         
         setListAdapter(new SimpleCursorAdapter(getApplicationContext(),
         									   R.layout.urllist, urls, 
