@@ -14,12 +14,19 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import org.nosreme.app.urlhelper.UrlStore;
@@ -28,6 +35,8 @@ public class URLHelperActivity extends ListActivity {
 	private final String[] colFields = { "url", "seen" };
 	
 	private final int REQ_CHOOSE_INTENT = 0;
+	
+	private Cursor cursor;
 
 	/* Launch a URL using the configured browser. */
 	private void launchUrl(String urlString)
@@ -149,40 +158,50 @@ public class URLHelperActivity extends ListActivity {
     }
     
 	private void showList(UrlStore urlstore) {
-		Cursor urls = urlstore.getUrlCursor();
+		cursor = urlstore.getUrlCursor();
 
 		int[] to = { R.id.tv1 };
         
         setListAdapter(new SimpleCursorAdapter(getApplicationContext(),
-        									   R.layout.urllist, urls, 
+        									   R.layout.urllist, cursor, 
         									   colFields,to));
         
         
         ListView lv = getListView();
-        /* Thanks to tranbinh.bino@gmail.com in the thread at:
-         * http://groups.google.com/group/android-developers/browse_thread/thread/14ba131c3ebc49eb
-         * for this snippet. 
-         */
-        lv.setOnItemLongClickListener( new AdapterView.OnItemLongClickListener 
-        		(){ 
-        		                //@Override 
-        		                
-        		                public boolean onItemLongClick(AdapterView<?> av, View v, int	pos, long id) { 
-        		                        onLongListItemClick(v,pos,id); 
-        		                        return true; 
-        		        } 
-        		});
+        
+        registerForContextMenu(lv);
+	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			                         ContextMenuInfo menuInfo)
+	{
+	    super.onCreateContextMenu(menu, v, menuInfo);
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.urlpopup, menu);
 	}
     
-    private void onLongListItemClick(View v, int pos, long id)
-    {
-   	    AlertDialog dlg = new AlertDialog.Builder(this).create();
-    	
-    	dlg.setMessage("List item long click" + Long.toString(id));
-    	dlg.show();
-    }
-    
     @Override
+	public boolean onContextItemSelected(MenuItem item) {
+    	 AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+    	 switch (item.getItemId()) {
+    	        case R.id.remove:
+    	            UrlStore urlstore = new UrlStore(getApplicationContext());
+
+    	            int items = urlstore.removeUrl(info.id);
+    	    		
+    	    		//((SimpleCursorAdapter) getListAdapter()).notifyDataSetChanged();
+    	            cursor.requery();
+    	    		Toast t = Toast.makeText(getApplicationContext(), Integer.toString(items) + " item(s) deleted.", Toast.LENGTH_SHORT);
+    	    		t.show();
+
+    	            return true;
+    	        default:
+    	            return super.onContextItemSelected(item);
+   	    }
+	}
+
+	@Override
     protected void onListItemClick(ListView l, View v, int position, long id)
     {
         UrlStore urlstore = new UrlStore(getApplicationContext());

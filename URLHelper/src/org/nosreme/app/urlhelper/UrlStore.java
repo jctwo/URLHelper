@@ -84,6 +84,16 @@ public class UrlStore {
         values.put("time", System.currentTimeMillis());
         values.put("seen", 0);
 		db.insert(URLSTORE_TABLE_NAME, "URL", values);
+		db.close();
+    }
+    public int removeUrl(long id)
+    {
+    	SQLiteDatabase db = dbhelper.getWritableDatabase();
+
+		int result = db.delete(URLSTORE_TABLE_NAME, "_id = " + Long.toString(id), null);
+		db.close();
+		
+		return result;
     }
     public String getUrl(long id) 
     {
