@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -16,6 +17,7 @@ import android.os.Parcelable;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -199,6 +201,48 @@ public class URLHelperActivity extends ListActivity {
     	        default:
     	            return super.onContextItemSelected(item);
    	    }
+	}
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    private void doRemoveAll()
+    {
+        UrlStore urlstore = new UrlStore(getApplicationContext());
+
+        int items = urlstore.removeAllUrls();
+		
+        cursor.requery();
+		Toast t = Toast.makeText(getApplicationContext(), Integer.toString(items) + " item(s) deleted.", Toast.LENGTH_SHORT);
+		t.show();
+    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		    case R.id.remove_all:
+		    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		    	builder.setMessage("Remove all URLs?")
+		    	       .setCancelable(false)
+		    	       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		    	           public void onClick(DialogInterface dialog, int id) {
+		    	                URLHelperActivity.this.doRemoveAll();
+		    	           }
+		    	       })
+		    	       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+		    	           public void onClick(DialogInterface dialog, int id) {
+		    	                dialog.cancel();
+		    	           }
+		    	       });
+		    	AlertDialog alert = builder.create();
+		    	alert.show();
+	            return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
 	}
 
 	@Override

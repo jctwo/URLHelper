@@ -95,6 +95,15 @@ public class UrlStore {
 		
 		return result;
     }
+    public int removeAllUrls()
+    {
+    	SQLiteDatabase db = dbhelper.getWritableDatabase();
+
+		int result = db.delete(URLSTORE_TABLE_NAME, null, null);
+		db.close();
+		
+		return result;
+    }
     public String getUrl(long id) 
     {
     	SQLiteDatabase db = dbhelper.getReadableDatabase();
