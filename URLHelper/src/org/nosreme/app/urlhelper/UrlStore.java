@@ -12,12 +12,13 @@ public class UrlStore {
 	     
 	   static class DbHelper extends SQLiteOpenHelper {
         private static final String DATABASE_NAME = "urlstore.db";
-        private static final int DATABASE_VERSION = 1;
+        private static final int DATABASE_VERSION = 3;
         
         private static final String URLSTORE_TABLE_CREATE =
                 "CREATE TABLE " + URLSTORE_TABLE_NAME + " (" +
                     "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "url TEXT," +
+                    "orig_url TEXT," +
                     "time INTEGER," +
                     "seen INTEGER" +
                 ");\n" +
@@ -40,6 +41,7 @@ public class UrlStore {
             db.execSQL(URLSTORE_TABLE_CREATE);
             ContentValues values = new ContentValues();
             values.put("url", "http://www.nosreme.org");
+            values.put("orig_url", "http://www.nosreme.org");
             values.put("time", System.currentTimeMillis());
             values.put("seen", 0);
 			db.insert(URLSTORE_TABLE_NAME, "URL", values);
@@ -81,6 +83,7 @@ public class UrlStore {
 
         ContentValues values = new ContentValues();
         values.put("url", url);  
+        values.put("orig_url", url);  
         values.put("time", System.currentTimeMillis());
         values.put("seen", 0);
 		db.insert(URLSTORE_TABLE_NAME, "URL", values);
@@ -110,7 +113,18 @@ public class UrlStore {
     	Cursor cursor = db.query(URLSTORE_TABLE_NAME, cols, "_id = " + Long.toString(id), null, null, null, null);
     	cursor.moveToFirst();
     	return cursor.getString(1);
-    	
+    }
+    public void setUrl(long id, String newVal)
+    {
+    	SQLiteDatabase db = dbhelper.getWritableDatabase();
+
+    	ContentValues values = new ContentValues();
+        values.put("url", newVal);  
+
+		db.update(URLSTORE_TABLE_NAME, values, "_id = " + Long.toString(id), null); 
+		db.close();
+		
+		return;    
     }
 }
 

@@ -1,6 +1,12 @@
 package org.nosreme.app.urlhelper;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -114,6 +120,40 @@ public class URLHelperActivity extends ListActivity {
 
 	}
 	
+	/* Attempt to expand a shortened URL.
+	 * Returns null if there is no change.
+	 */
+	private static String expandUrl(String urlString)
+	{
+        URL url;
+        try {
+        	url = new URL(urlString);
+        	HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+            conn.setRequestMethod("HEAD");
+            conn.setInstanceFollowRedirects(false);
+            int resp = conn.getResponseCode();
+            if (resp == 301 || resp == 302)
+            {
+            	Map<String, List<String>> headers = conn.getHeaderFields();
+            	List<String> hlist = headers.get("location");
+            	if (hlist.size() != 1)
+            	{
+            		return null;
+            	}
+            	return hlist.get(0);
+            }
+            else
+            {
+            	return null;
+            }	
+        }
+        catch (Exception e)
+        {
+        	return null;
+        }
+	}
+	
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -188,6 +228,7 @@ public class URLHelperActivity extends ListActivity {
     	 AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
     	 switch (item.getItemId()) {
     	        case R.id.remove:
+    	        {
     	            UrlStore urlstore = new UrlStore(getApplicationContext());
 
     	            int items = urlstore.removeUrl(info.id);
@@ -198,6 +239,26 @@ public class URLHelperActivity extends ListActivity {
     	    		t.show();
 
     	            return true;
+    	        }
+    	        case R.id.expand:
+    	        {
+    	        	UrlStore urlstore = new UrlStore(getApplicationContext());
+    	        	String url = urlstore.getUrl(info.id);
+    	        	String expanded = expandUrl(url);
+    	        	if (expanded != null)
+    	        	{
+    	        		urlstore.setUrl(info.id, expanded);
+        	            cursor.requery();
+        	    		Toast t = Toast.makeText(getApplicationContext(), "URL expanded", Toast.LENGTH_SHORT);
+        	    		t.show();
+    	        	}
+    	        	else
+    	        	{
+        	    		Toast t = Toast.makeText(getApplicationContext(), "URL expansion failed", Toast.LENGTH_SHORT);
+        	    		t.show();
+    	        	}
+    	        	return true;
+    	        }
     	        default:
     	            return super.onContextItemSelected(item);
    	    }
