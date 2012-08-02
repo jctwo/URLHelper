@@ -13,3 +13,6 @@ chosen default for every distinct set of available handlers)
 * Various tidy-ups.
 
 * Make the list items bigger (include dates/other info?)
+
+* SimpleCursorAdapter constructor is deprecated according to the documentation,
+so investigate other options.
