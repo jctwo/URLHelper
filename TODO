@@ -1,0 +1,15 @@
+Tasks to do before it's finished:
+* Split the URL expansion into a separate app (so that the main app doesn't
+need internet permissions).
+
+* Move URL expansion to a separate thread (free with above split to other app?)
+so that it doesn't block the UI.
+
+* Implement the handler preferences (current preferred scheme - store a
+chosen default for every distinct set of available handlers)
+
+* Create an icon
+
+* Various tidy-ups.
+
+* Make the list items bigger (include dates/other info?)
