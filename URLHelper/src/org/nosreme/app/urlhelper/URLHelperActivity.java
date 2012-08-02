@@ -131,6 +131,10 @@ public class URLHelperActivity extends ListActivity {
         	HttpURLConnection conn = (HttpURLConnection)url.openConnection();
             conn.setRequestMethod("HEAD");
             conn.setInstanceFollowRedirects(false);
+            // See http://code.google.com/p/android/issues/detail?id=16227                         
+            // and http://code.google.com/p/android/issues/detail?id=24672
+            // for why the Accept-Encoding is required to disable gzip
+            conn.setRequestProperty("Accept-Encoding", "identity");
             int resp = conn.getResponseCode();
             if (resp == 301 || resp == 302)
             {
