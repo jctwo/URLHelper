@@ -40,7 +40,7 @@ import android.widget.ToggleButton;
 import org.nosreme.app.urlhelper.UrlStore;
 
 public class URLHelperActivity extends ListActivity {
-	private final String[] colFields = { "url", "seen" };
+	private final String[] colFields = { "url", "time" };
 	
 	private final int REQ_CHOOSE_INTENT = 0;
 	
@@ -215,7 +215,7 @@ public class URLHelperActivity extends ListActivity {
 	private void showList(UrlStore urlstore) {
 		cursor = urlstore.getUrlCursor();
 
-		int[] to = { R.id.tv1 };
+		int[] to = { R.id.tv1, R.id.tv2 };
         
         setListAdapter(new SimpleCursorAdapter(getApplicationContext(),
         									   R.layout.urllist, cursor, 

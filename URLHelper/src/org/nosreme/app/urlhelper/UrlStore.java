@@ -82,7 +82,7 @@ public class UrlStore {
     	dbhelper = new DbHelper(context);
     }
     
-    private String[] cols = new String[] { "_id", "url", "seen", "expanded" };
+    private String[] cols = new String[] { "_id", "url", "seen", "expanded", "time" };
     
     public Cursor getUrlCursor()
     {
