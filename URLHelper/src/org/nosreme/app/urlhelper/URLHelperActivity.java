@@ -120,44 +120,53 @@ public class URLHelperActivity extends ListActivity {
 
 	}
 	
+	private static final int MAX_URL_EXPAND = 5;
 	/* Attempt to expand a shortened URL.
 	 * Returns null if there is no change.
+	 * 
+	 * If iterate==true, then iterates until there is no further redirection.
+	 * To avoid loops, at most MAX_URL_EXPAND iterations.
 	 */
-	private static String expandUrl(String urlString)
+	private static String expandUrl(String urlString, boolean iterate)
 	{
         URL url;
-        try {
-        	url = new URL(urlString);
-        	HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-            conn.setRequestMethod("HEAD");
-            conn.setInstanceFollowRedirects(false);
-            // See http://code.google.com/p/android/issues/detail?id=16227                         
-            // and http://code.google.com/p/android/issues/detail?id=24672
-            // for why the Accept-Encoding is required to disable gzip
-            conn.setRequestProperty("Accept-Encoding", "identity");
-            int resp = conn.getResponseCode();
-            if (resp == 301 || resp == 302)
-            {
-            	Map<String, List<String>> headers = conn.getHeaderFields();
-            	List<String> hlist = headers.get("location");
-            	if (hlist.size() != 1)
-            	{
-            		return null;
-            	}
-            	return hlist.get(0);
-            }
-            else
-            {
-            	return null;
-            }	
-        }
-        catch (Exception e)
-        {
-        	return null;
-        }
+        String result = null;
+        int iterations = iterate? MAX_URL_EXPAND : 1;
+        do {
+        	try {
+        		url = new URL((result != null)? result : urlString);
+        		HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+        		conn.setRequestMethod("HEAD");
+        		conn.setInstanceFollowRedirects(false);
+        		// See http://code.google.com/p/android/issues/detail?id=16227                         
+        		// and http://code.google.com/p/android/issues/detail?id=24672
+        		// for why the Accept-Encoding is required to disable gzip
+        		conn.setRequestProperty("Accept-Encoding", "identity");
+        		int resp = conn.getResponseCode();
+        		if (resp == 301 || resp == 302)
+        		{
+        			Map<String, List<String>> headers = conn.getHeaderFields();
+        			List<String> hlist = headers.get("location");
+        			if (hlist.size() != 1)
+        			{
+        				return result;
+        			}
+        			result = hlist.get(0);
+        		}
+        		else
+        		{
+        			return result;
+        		}	
+        	}
+        	catch (Exception e)
+        	{
+        		return result;
+        	}
+        } while (--iterations > 0);
+        
+        return result;
 	}
-	
-	
+		
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -248,7 +257,7 @@ public class URLHelperActivity extends ListActivity {
     	        {
     	        	UrlStore urlstore = new UrlStore(getApplicationContext());
     	        	String url = urlstore.getUrl(info.id);
-    	        	String expanded = expandUrl(url);
+    	        	String expanded = expandUrl(url, true);
     	        	if (expanded != null)
     	        	{
     	        		urlstore.setUrl(info.id, expanded);
@@ -288,7 +297,33 @@ public class URLHelperActivity extends ListActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		    case R.id.expand_all:
+		    {
+		        UrlStore urlstore = new UrlStore(getApplicationContext());
+		    	Cursor urls = urlstore.getUnexpanded();
+		    	
+		    	urls.moveToFirst();
+		    	
+		    	while (!urls.isAfterLast())
+		    	{
+		    		// TODO: use constants for field indices
+		    		String url = urls.getString(1);
+		    		int id = urls.getInt(0);
+		    		
+		    		String expanded = expandUrl(url, true);
+		    		if (expanded != null)
+		    		{
+		    			urlstore.setUrlExpansion(id, expanded);
+		    		}
+		    		urls.moveToNext();
+		    	}
+		    	urls.close();
+		        cursor.requery();
+		    	
+		        return true;
+		    }
 		    case R.id.remove_all:
+		    {
 		    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		    	builder.setMessage("Remove all URLs?")
 		    	       .setCancelable(false)
@@ -305,6 +340,7 @@ public class URLHelperActivity extends ListActivity {
 		    	AlertDialog alert = builder.create();
 		    	alert.show();
 	            return true;
+		    }
 			default:
 				return super.onOptionsItemSelected(item);
 		}

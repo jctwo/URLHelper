@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/remove_all" android:checkable="false" android:menuCategory="system" android:titleCondensed="Clear all" android:title="Clear all" android:icon="@android:drawable/ic_delete"></item>
+    <item android:id="@+id/expand_all" android:menuCategory="system" android:titleCondensed="Expand all" android:title="Expand all" android:checkable="false" android:icon="@android:drawable/ic_menu_view"></item><item android:id="@+id/remove_all" android:checkable="false" android:menuCategory="system" android:titleCondensed="Clear all" android:title="Clear all" android:icon="@android:drawable/ic_delete"></item>
+    
     
 
 </menu>

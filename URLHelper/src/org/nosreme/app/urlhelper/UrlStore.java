@@ -12,7 +12,11 @@ public class UrlStore {
 	     
 	   static class DbHelper extends SQLiteOpenHelper {
         private static final String DATABASE_NAME = "urlstore.db";
-        private static final int DATABASE_VERSION = 3;
+        private static final int DATABASE_VERSION = 4;
+        
+        private static final String URLSTORE_UPDATE_VERSION_4 =
+        		"ALTER TABLE " + URLSTORE_TABLE_NAME + " ADD COLUMN expanded DEFAULT 0;" +
+                "ALTER TABLE " + URLSTORE_TABLE_NAME + " ADD COLUMN comment TEXT;";
         
         private static final String URLSTORE_TABLE_CREATE =
                 "CREATE TABLE " + URLSTORE_TABLE_NAME + " (" +
@@ -21,6 +25,8 @@ public class UrlStore {
                     "orig_url TEXT," +
                     "time INTEGER," +
                     "seen INTEGER" +
+                    "expanded INTEGER," +
+                    "comment TEXT," + 
                 ");\n" +
                 /* handler table stores a list of activities which
                  * we've seen, with a preference ordering.
@@ -43,18 +49,29 @@ public class UrlStore {
             values.put("url", "http://www.nosreme.org");
             values.put("orig_url", "http://www.nosreme.org");
             values.put("time", System.currentTimeMillis());
+            values.put("expanded", 0);
             values.put("seen", 0);
 			db.insert(URLSTORE_TABLE_NAME, "URL", values);
         }
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-            // Kills the table and existing data
-            db.execSQL("DROP TABLE IF EXISTS " + URLSTORE_TABLE_NAME);
-            db.execSQL("DROP TABLE IF EXISTS " + HANDLER_TABLE_NAME);
+        	if (oldVersion < 3)
+        	{
+        		/* No supported upgrade */
+                // Kills the table and existing data
+                db.execSQL("DROP TABLE IF EXISTS " + URLSTORE_TABLE_NAME);
+                db.execSQL("DROP TABLE IF EXISTS " + HANDLER_TABLE_NAME);
 
-            // Recreates the database with a new version
-            onCreate(db);
+                // Recreates the database with a new version
+                onCreate(db);
+                return;
+        	}
+        	if (oldVersion < 4)
+        	{
+        	    db.execSQL(URLSTORE_UPDATE_VERSION_4);
+        	}
+
         }
     }
     
@@ -65,7 +82,7 @@ public class UrlStore {
     	dbhelper = new DbHelper(context);
     }
     
-    private String[] cols = new String[] { "_id", "url", "seen" };
+    private String[] cols = new String[] { "_id", "url", "seen", "expanded" };
     
     public Cursor getUrlCursor()
     {
@@ -75,7 +92,15 @@ public class UrlStore {
     	Cursor cursor = db.query(URLSTORE_TABLE_NAME, cols, null, null, null, null, null);
     	
     	return cursor;
+    }
+    public Cursor getUnexpanded()
+    {
+    	SQLiteDatabase db;
+    	db = dbhelper.getReadableDatabase();
     	
+    	Cursor cursor = db.query(URLSTORE_TABLE_NAME, cols, "expanded = 0", null, null, null, null);
+    	
+    	return cursor;
     }
     public void addUrl(String url)
     {
@@ -120,6 +145,19 @@ public class UrlStore {
 
     	ContentValues values = new ContentValues();
         values.put("url", newVal);  
+
+		db.update(URLSTORE_TABLE_NAME, values, "_id = " + Long.toString(id), null); 
+		db.close();
+		
+		return;    
+    }
+    public void setUrlExpansion(long id, String newVal)
+    {
+    	SQLiteDatabase db = dbhelper.getWritableDatabase();
+
+    	ContentValues values = new ContentValues();
+        values.put("url", newVal);  
+        values.put("expanded", 1);
 
 		db.update(URLSTORE_TABLE_NAME, values, "_id = " + Long.toString(id), null); 
 		db.close();
