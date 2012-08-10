@@ -18,3 +18,15 @@ list.  This looks useful:
 
 * SimpleCursorAdapter constructor is deprecated according to the documentation,
 so investigate other options.
+
+* Add details view for a URL (to show original, etc.)
+
+* Add "URL opened" field (with icon?) to list.
+
+* Start adding some settings
+  - automatically expand URLs?
+  - don't show list when adding URL
+
+* Detect Wifi vs phone network and optionally behave differently
+
+* Handle https fully
