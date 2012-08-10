@@ -66,7 +66,7 @@ public class URLHelperActivity extends ListActivity {
     	Log.i("URLHelper", "Searching for handler for " + urlString);
     	
     	int activityCount = activities.size();
-    	Parcelable[] activitylist = new Parcelable[activityCount-1];
+    	Parcelable[] activitylist = new Parcelable[activityCount];
     	int activitiesFound = 0;
     	for (ResolveInfo ri: activities)
     	{
