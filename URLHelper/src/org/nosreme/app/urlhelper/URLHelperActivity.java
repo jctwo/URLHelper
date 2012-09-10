@@ -2,6 +2,7 @@ package org.nosreme.app.urlhelper;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -62,6 +63,8 @@ public class URLHelperActivity extends ListActivity {
     	
     	int activityCount = activities.size();
     	Parcelable[] activitylist = new Parcelable[activityCount];
+    	// Build a list of the options as strings
+    	String[] intentStrList = new String[activityCount];
     	int activitiesFound = 0;
     	for (ResolveInfo ri: activities)
     	{
@@ -80,11 +83,45 @@ public class URLHelperActivity extends ListActivity {
     			Intent actIntent = new Intent();
     			actIntent.setClassName(ai.packageName, ai.name);
     			activitylist[activitiesFound++] = actIntent;
+    			intentStrList[activitiesFound++] = ai.packageName + "/" + ai.name;
     		}
     	}
     	
-    	/* If more than one found, create a popup to ask. */
+    	boolean chosen = false;
     	if (activitiesFound > 1)
+    	{
+    		/* Build a single canonical string of the possible handlers,
+    		 * which we can store and look up in the database.
+    		 */
+    		String combinedActivityList;
+    		
+    		Arrays.sort(intentStrList);
+    		
+    		StringBuilder builder = new StringBuilder();
+    		
+    		for (String intentstr : intentStrList)
+    		{
+    			builder.append("@@");
+    			builder.append(intentstr);
+    		}
+    		combinedActivityList = new String(builder);
+    		
+    		UrlStore urlstore = new UrlStore(getApplicationContext());
+
+    	    Cursor cursor = urlstore.findHandlerSet(combinedActivityList);
+    	    
+    	    cursor.moveToFirst();
+    	    if (!cursor.isAfterLast())
+    	    {
+    	    	/* TODO: Use constants for column names!*/
+    	    	pkg = cursor.getString(2);
+    	    	name = cursor.getString(3);
+    	    	chosen = true;
+    	    }
+    	}
+    	
+    	/* If there's no single choice, then ask the user. */
+    	if (!chosen)
     	{
     		Intent chooserIntent = new Intent();
     		chooserIntent.setAction(Intent.ACTION_CHOOSER);

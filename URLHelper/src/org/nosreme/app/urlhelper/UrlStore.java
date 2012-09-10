@@ -12,31 +12,33 @@ public class UrlStore {
 	     
 	   static class DbHelper extends SQLiteOpenHelper {
         private static final String DATABASE_NAME = "urlstore.db";
-        private static final int DATABASE_VERSION = 4;
+        private static final int DATABASE_VERSION = 5;
         
         private static final String URLSTORE_UPDATE_VERSION_4 =
         		"ALTER TABLE " + URLSTORE_TABLE_NAME + " ADD COLUMN expanded DEFAULT 0;" +
                 "ALTER TABLE " + URLSTORE_TABLE_NAME + " ADD COLUMN comment TEXT;";
         
+        private static final String HANDLER_TABLE_CREATE =
+                /* handler table stores a list of activities which
+                 * we've seen, with a preference ordering.
+                 */
+                "CREATE TABLE " + HANDLER_TABLE_NAME + " (" +
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "optionsKey TEXT UNIQUE," +  /* Encoded list of handlers */
+                    "packageName TEXT," +
+                    "name TEXT" +
+                ");";
         private static final String URLSTORE_TABLE_CREATE =
                 "CREATE TABLE " + URLSTORE_TABLE_NAME + " (" +
                     "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "url TEXT," +
                     "orig_url TEXT," +
                     "time INTEGER," +
-                    "seen INTEGER" +
+                    "seen INTEGER," +
                     "expanded INTEGER," +
-                    "comment TEXT," + 
+                    "comment TEXT" + 
                 ");\n" +
-                /* handler table stores a list of activities which
-                 * we've seen, with a preference ordering.
-                 */
-                "CREATE TABLE " + HANDLER_TABLE_NAME + " (" +
-                    "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "packageName TEXT," +
-                    "name TEXT," +
-                    "order INTEGER UNIQUE," +
-                ");";
+                    HANDLER_TABLE_CREATE;
 
         DbHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -71,6 +73,12 @@ public class UrlStore {
         	{
         	    db.execSQL(URLSTORE_UPDATE_VERSION_4);
         	}
+        	if (oldVersion < 5)
+        	{
+        		/* The handler table definition changed. */
+        		db.execSQL("DROP TABLE IF EXISTS " + HANDLER_TABLE_NAME);
+        		db.execSQL(HANDLER_TABLE_CREATE);
+        	}
 
         }
     }
@@ -83,6 +91,7 @@ public class UrlStore {
     }
     
     private String[] cols = new String[] { "_id", "url", "seen", "expanded", "time" };
+    private String[] handlerCols = new String[] { "_id", "optionsKey", "packageName", "name" };
     
     public Cursor getUrlCursor()
     {
@@ -163,6 +172,16 @@ public class UrlStore {
 		db.close();
 		
 		return;    
+    }
+    
+    /* Look up a handler list. */
+    public Cursor findHandlerSet(String handlerString)
+    {
+    	SQLiteDatabase db = dbhelper.getReadableDatabase();
+    	Cursor cursor = db.query(HANDLER_TABLE_NAME, handlerCols, "optionsKey = ?", new String[] { handlerString }, null, null, null);
+    	cursor.moveToFirst();
+    	
+    	return cursor;
     }
 }
 
