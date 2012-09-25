@@ -1,6 +1,7 @@
 package org.nosreme.app.urlexpander;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 public class URLExpanderActivity extends Activity {
@@ -8,6 +9,16 @@ public class URLExpanderActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+
+        Intent intent = getIntent();
+
+    	/* If online, simply relaunch it. */
+    	if (intent.getAction().equals(android.content.Intent.ACTION_VIEW))
+    	{
+//    	    launchUrl(intent.getDataString());
+    	}
+
     }
+
+
 }
