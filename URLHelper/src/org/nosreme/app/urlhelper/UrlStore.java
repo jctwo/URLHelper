@@ -37,8 +37,7 @@ public class UrlStore {
                     "seen INTEGER," +
                     "expanded INTEGER," +
                     "comment TEXT" + 
-                ");\n" +
-                    HANDLER_TABLE_CREATE;
+                ");\n";
 
         DbHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -47,6 +46,7 @@ public class UrlStore {
          @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(URLSTORE_TABLE_CREATE);
+            db.execSQL(HANDLER_TABLE_CREATE);
             ContentValues values = new ContentValues();
             values.put("url", "http://www.nosreme.org");
             values.put("orig_url", "http://www.nosreme.org");

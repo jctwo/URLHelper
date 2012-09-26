@@ -82,8 +82,9 @@ public class URLHelperActivity extends ListActivity {
     			}
     			Intent actIntent = new Intent();
     			actIntent.setClassName(ai.packageName, ai.name);
-    			activitylist[activitiesFound++] = actIntent;
-    			intentStrList[activitiesFound++] = ai.packageName + "/" + ai.name;
+    			activitylist[activitiesFound] = actIntent;
+    			intentStrList[activitiesFound] = ai.packageName + "/" + ai.name;
+    			activitiesFound += 1;
     		}
     	}
     	
@@ -95,14 +96,14 @@ public class URLHelperActivity extends ListActivity {
     		 */
     		String combinedActivityList;
     		
-    		Arrays.sort(intentStrList);
+    		Arrays.sort(intentStrList, 0, activitiesFound);
     		
     		StringBuilder builder = new StringBuilder();
     		
-    		for (String intentstr : intentStrList)
+    		for (int i=0; i<activitiesFound; ++i)
     		{
     			builder.append("@@");
-    			builder.append(intentstr);
+    			builder.append(intentStrList[i]);
     		}
     		combinedActivityList = new String(builder);
     		
