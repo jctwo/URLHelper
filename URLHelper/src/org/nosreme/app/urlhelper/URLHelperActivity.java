@@ -8,6 +8,7 @@ import java.util.Map;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -41,6 +42,8 @@ public class URLHelperActivity extends ListActivity {
 	private final int REQ_CHOOSE_INTENT = 0;
 	
 	private Cursor cursor;
+	
+	private String intentOptionsStr = null;
 
 	/* Launch a URL using the configured browser. */
 	private void launchUrl(String urlString)
@@ -89,13 +92,13 @@ public class URLHelperActivity extends ListActivity {
     	}
     	
     	boolean chosen = false;
+		String combinedActivityList = null;
+		
     	if (activitiesFound > 1)
     	{
     		/* Build a single canonical string of the possible handlers,
     		 * which we can store and look up in the database.
     		 */
-    		String combinedActivityList;
-    		
     		Arrays.sort(intentStrList, 0, activitiesFound);
     		
     		StringBuilder builder = new StringBuilder();
@@ -111,13 +114,20 @@ public class URLHelperActivity extends ListActivity {
 
     	    Cursor cursor = urlstore.findHandlerSet(combinedActivityList);
     	    
+    	    Log.v("handler", "combined str=" + combinedActivityList);
+    	    
     	    cursor.moveToFirst();
     	    if (!cursor.isAfterLast())
     	    {
     	    	/* TODO: Use constants for column names!*/
     	    	pkg = cursor.getString(2);
     	    	name = cursor.getString(3);
+    	    	Log.v("handler","Found: " + pkg + "/" + name);
     	    	chosen = true;
+    	    }
+    	    else
+    	    {
+    	    	Log.v("handler", "Nothing found");
     	    }
     	}
     	
@@ -144,6 +154,8 @@ public class URLHelperActivity extends ListActivity {
     		/* This will create the system chooser, and return the result in onActivityResult
     		 * below (when we'll actually launch it).
     		 */
+    		intentOptionsStr = combinedActivityList;
+    		Log.v("handler", "starting chooser.  saved str:" + intentOptionsStr);
     		startActivityForResult(chooserIntent, REQ_CHOOSE_INTENT);    		
     	} else {
     		/* Only one, so use it directly. */
@@ -391,12 +403,28 @@ public class URLHelperActivity extends ListActivity {
     
     protected void onActivityResult(int requestCode, int resultCode,
             Intent data) {
+    	Log.v("handler", "in onActivityResult");
     	if (requestCode == REQ_CHOOSE_INTENT)
     	{
     		Log.i("URLHandler", "Got activity result");
+    		Log.v("handler", "got result, saved str=" + intentOptionsStr);
+    		Log.v("handler", "got resultCode" + resultCode);
     		if (resultCode == RESULT_OK) {
+    			/* Save the handler preference.
+    			 * TODO: Need option to not make it default!
+    			 */
+    			if (intentOptionsStr != null)
+    			{
+        	    	Log.v("handler", "saved string=" + intentOptionsStr);
+   	            UrlStore urlstore = new UrlStore(getApplicationContext());
+    	            ComponentName comp = data.getComponent();
+    		        urlstore.setHandlerSet(intentOptionsStr, comp.getPackageName(), comp.getClassName());
+    		        Log.v("handler", "saving as " + comp.getPackageName() + "/" + comp.getClassName());
+    			}
+
     			startActivity(data);
     		}
+    		intentOptionsStr = null;
     	}
     }
 }

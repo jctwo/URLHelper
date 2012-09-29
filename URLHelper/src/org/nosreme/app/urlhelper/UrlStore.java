@@ -183,6 +183,21 @@ public class UrlStore {
     	
     	return cursor;
     }
+    
+    /* Set the default handler */
+    public void setHandlerSet(String handlerString, String packageName, String name)
+    {
+    	SQLiteDatabase db = dbhelper.getWritableDatabase();
+
+    	ContentValues values = new ContentValues();
+        values.put("optionsKey", handlerString);  
+        values.put("packageName", packageName);
+        values.put("name", name);
+
+		db.insert(HANDLER_TABLE_NAME, "optionsKey", values);
+		db.close();
+    
+    }
 }
 
 
