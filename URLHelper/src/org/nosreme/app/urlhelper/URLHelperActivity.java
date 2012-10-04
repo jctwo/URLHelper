@@ -135,7 +135,7 @@ public class URLHelperActivity extends ListActivity {
     	if (!chosen)
     	{
     		Intent chooserIntent = new Intent();
-    		chooserIntent.setAction(Intent.ACTION_CHOOSER);
+    		chooserIntent.setAction(Intent.ACTION_PICK_ACTIVITY);
     		if (false) {
     			/* TODO:
     			 * This is a way to add activities to the chooser; but to
