@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <CheckBoxPreference android:summaryOn="sum on" android:summary="Expand URLs when opening" android:key="expandOnLaunch" android:defaultValue="0" android:title="Expand on launch" android:summaryOff="sum off"/>
+    
+
+</PreferenceScreen>

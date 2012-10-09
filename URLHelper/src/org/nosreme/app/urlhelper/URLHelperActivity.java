@@ -397,6 +397,12 @@ public class URLHelperActivity extends ListActivity {
 		    	alert.show();
 	            return true;
 		    }
+		    case R.id.menu_settings:
+		    {
+		    	Intent settingsIntent = new Intent(this, SettingsActivity.class);
+		    	startActivity(settingsIntent);
+		    	return true;
+		    }
 			default:
 				return super.onOptionsItemSelected(item);
 		}

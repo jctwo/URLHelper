@@ -28,6 +28,7 @@
                 
             </intent-filter>
 </activity>
+        <activity android:launchMode="standard" android:name="SettingsActivity"></activity>
     </application>
 
 </manifest>
