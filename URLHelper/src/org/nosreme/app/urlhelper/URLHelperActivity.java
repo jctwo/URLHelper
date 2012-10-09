@@ -19,6 +19,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -217,7 +218,8 @@ public class URLHelperActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         
         /* Check whether we're in offline mode. */
-        SharedPreferences prefs = getSharedPreferences("settings", 0);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
         boolean offlineSetting = prefs.getBoolean("offline", true);
         
         UrlStore urlstore = new UrlStore(getApplicationContext());
@@ -245,7 +247,8 @@ public class URLHelperActivity extends ListActivity {
 
     			public void onCheckedChanged(CompoundButton buttonView,
     					boolean isChecked) {
-    		    	SharedPreferences prefs = getSharedPreferences("settings", 0);
+    		        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
     		    	Log.v("URLHandler", "on click value: " + isChecked);
     		        prefs.edit().putBoolean("offline", isChecked).commit();
     		    	Log.v("URLHandler", "committed (count = " + prefs.getInt("count", -1));				
