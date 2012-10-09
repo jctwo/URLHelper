@@ -5,8 +5,10 @@ need internet permissions).
 * Move URL expansion to a separate thread (free with above split to other app?)
 so that it doesn't block the UI.
 
-* Implement the handler preferences (current preferred scheme - store a
-chosen default for every distinct set of available handlers)
+* Improve the handler preferences:
+  - allow turning off default
+  - allow removing stored defaults
+  - do custom dialog
 
 * Create an icon
 
@@ -25,8 +27,13 @@ so investigate other options.
 
 * Start adding some settings
   - automatically expand URLs?
-  - don't show list when adding URL
 
 * Detect Wifi vs phone network and optionally behave differently
 
 * Handle https fully
+
+* Fix "expand all"
+
+* Fix multiple add bug
+
+* Refresh list when returning to activity.

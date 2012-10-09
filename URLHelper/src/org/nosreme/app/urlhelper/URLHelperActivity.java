@@ -162,7 +162,6 @@ public class URLHelperActivity extends ListActivity {
     	    intent.setClassName(pkg, name);
         	startActivity(intent);
     	}
-
 	}
 	
 	private static final int MAX_URL_EXPAND = 5;
@@ -217,38 +216,50 @@ public class URLHelperActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        UrlStore urlstore = new UrlStore(getApplicationContext());
-
-        Intent intent = getIntent();
-        if (intent.getAction().equals(android.content.Intent.ACTION_VIEW))
-        {
-        	urlstore.addUrl(intent.getDataString());
-        }
-        
         /* Check whether we're in offline mode. */
         SharedPreferences prefs = getSharedPreferences("settings", 0);
         boolean offlineSetting = prefs.getBoolean("offline", true);
- 	    setContentView(R.layout.main);
-	    
-        ToggleButton button = (ToggleButton) findViewById(R.id.toggleOffline);
-        button.setChecked(offlineSetting);
-        button.setOnCheckedChangeListener(new OnCheckedChangeListener()
-        {
-
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-		    	SharedPreferences prefs = getSharedPreferences("settings", 0);
-		    	Log.v("URLHandler", "on click value: " + isChecked);
-		        prefs.edit().putBoolean("offline", isChecked).commit();
-		    	Log.v("URLHandler", "committed (count = " + prefs.getInt("count", -1));				
-			}
-        	
-        });
         
+        UrlStore urlstore = new UrlStore(getApplicationContext());
+
+        Intent intent = getIntent();
+        /* If we've been launched with ACTION_VIEW (a URL) and we're in online (passthrough)
+         * mode, then we won't have a UI.
+         */
+        boolean haveUrl = intent.getAction().equals(android.content.Intent.ACTION_VIEW);
+        boolean willLaunch =  haveUrl && !offlineSetting;
+
+        if (!willLaunch)
+        {
+        	/* We're going to save the URL and show the list. 
+        	 * TODO: A "save but don't show" option might be good. */
+        	if (haveUrl) {
+        		urlstore.addUrl(intent.getDataString());
+        	}
+     	    setContentView(R.layout.main);
+     	    
+            ToggleButton button = (ToggleButton) findViewById(R.id.toggleOffline);
+            button.setChecked(offlineSetting);
+            button.setOnCheckedChangeListener(new OnCheckedChangeListener()
+            {
+
+    			public void onCheckedChanged(CompoundButton buttonView,
+    					boolean isChecked) {
+    		    	SharedPreferences prefs = getSharedPreferences("settings", 0);
+    		    	Log.v("URLHandler", "on click value: " + isChecked);
+    		        prefs.edit().putBoolean("offline", isChecked).commit();
+    		    	Log.v("URLHandler", "committed (count = " + prefs.getInt("count", -1));				
+    			}
+            	
+            });
+        }
+	            
     	/* If online, simply relaunch it. */
-    	if (intent.getAction().equals(android.content.Intent.ACTION_VIEW) && !offlineSetting)
+    	if (willLaunch)
     	{
     	    launchUrl(intent.getDataString());
+    	    /* And exit - nothing else to do once we've launched the URL again. */
+    	    finish();
     	}
     	else
     	{
