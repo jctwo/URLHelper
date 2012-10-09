@@ -120,6 +120,7 @@ public class UrlStore {
         values.put("orig_url", url);  
         values.put("time", System.currentTimeMillis());
         values.put("seen", 0);
+        values.put("expanded", 0);
 		db.insert(URLSTORE_TABLE_NAME, "URL", values);
 		db.close();
     }
