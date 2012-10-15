@@ -32,3 +32,7 @@ so investigate other options.
 * Fix multiple add bug
 
 * Refresh list when returning to activity.
+
+* Fix problem with relative URIs
+
+* Sort newest at top?
