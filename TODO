@@ -30,9 +30,12 @@ so investigate other options.
 * Handle https fully
 
 * Fix multiple add bug
+  - hopefully fixed?
 
 * Refresh list when returning to activity.
 
 * Fix problem with relative URIs
 
 * Sort newest at top?
+
+* Don't re-expand any already-expanded URLs when launching.

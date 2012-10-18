@@ -232,20 +232,25 @@ public class URLHelperActivity extends ListActivity {
 		UrlStore urlstore = new UrlStore(getApplicationContext());
 
 		Intent intent = getIntent();
+		
+		/* If we're restarting, then reinitialise the UI and so on (and refresh it!), but don't
+		 * launch anything or write anything to the database, as it's been done already.
+		 */
+		boolean restarting = savedInstanceState != null;
 		/*
 		 * If we've been launched with ACTION_VIEW (a URL) and we're in online
 		 * (passthrough) mode, then we won't have a UI.
 		 */
 		boolean haveUrl = intent.getAction().equals(
 				android.content.Intent.ACTION_VIEW);
-		boolean willLaunch = haveUrl && !offlineSetting;
+		boolean willLaunch = haveUrl && !offlineSetting && !restarting;  /* We're online and have a new URL */
 
 		if (!willLaunch) {
 			/*
 			 * We're going to save the URL and show the list. TODO: A
 			 * "save but don't show" option might be good.
 			 */
-			if (haveUrl) {
+			if (haveUrl && !restarting) {
 				urlstore.addUrl(intent.getDataString());
 			}
 			setContentView(R.layout.main);
