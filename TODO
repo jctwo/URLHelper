@@ -39,3 +39,5 @@ so investigate other options.
 * Sort newest at top?
 
 * Don't re-expand any already-expanded URLs when launching.
+
+* Fix "database not closed" issues.
