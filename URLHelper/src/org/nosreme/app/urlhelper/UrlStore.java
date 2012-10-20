@@ -149,6 +149,12 @@ public class UrlStore {
     	cursor.moveToFirst();
     	return cursor.getString(1);
     }
+	public boolean isExpanded(long id) {
+    	SQLiteDatabase db = dbhelper.getReadableDatabase();
+    	Cursor cursor = db.query(URLSTORE_TABLE_NAME, cols, "_id = " + Long.toString(id), null, null, null, null);
+    	cursor.moveToFirst();
+    	return cursor.getInt(3) != 0;
+	}
     public void setUrl(long id, String newVal)
     {
     	SQLiteDatabase db = dbhelper.getWritableDatabase();

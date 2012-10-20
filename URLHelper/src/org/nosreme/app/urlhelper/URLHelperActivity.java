@@ -46,14 +46,17 @@ public class URLHelperActivity extends ListActivity {
 
 	private String intentOptionsStr = null;
 
-	/* Launch a URL using the configured browser. */
-	private void launchUrl(String urlString)
+	/* Launch an item, expanding if configured and necessary. */
+	private void launchItem(long id)
 	{
-    	PackageManager pm = getPackageManager();
+		UrlStore urlstore = new UrlStore(getApplicationContext());
+
+		String urlString = urlstore.getUrl(id);
+		
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         boolean expand = prefs.getBoolean("expandOnLaunch", false);
         
-        if (expand)
+        if (expand && !urlstore.isExpanded(id))
         {
         	String expanded = expandUrl(urlString, true);
         	if (expanded != null)
@@ -61,6 +64,14 @@ public class URLHelperActivity extends ListActivity {
                 urlString = expanded;
         	}
         }
+
+        launchUrl(urlString);
+	}
+	
+	/* Launch a URL using the configured browser. */
+	private void launchUrl(String urlString)
+	{
+    	PackageManager pm = getPackageManager();
     	Uri uri = Uri.parse(urlString);
     	Intent intent = new Intent();
     	intent.setComponent(null);
@@ -424,11 +435,7 @@ public class URLHelperActivity extends ListActivity {
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		UrlStore urlstore = new UrlStore(getApplicationContext());
-
-		String urlString = urlstore.getUrl(id);
-
-		launchUrl(urlString);
+		launchItem(id);
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
