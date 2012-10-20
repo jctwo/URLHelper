@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="launchimmEntries">
+        <item >Always</item>
+        <item >On Wifi</item>
+        <item >Never</item>
+    </string-array>
+    <string-array name="launchimmValues">
+        <item >always</item>
+        <item >wifi</item>
+        <item >never</item>
+        
+    </string-array>
+    
+</resources>

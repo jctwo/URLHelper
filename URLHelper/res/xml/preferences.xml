@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     <CheckBoxPreference android:summaryOn="Un-shorten URLs before launching" android:summary="Expand URLs when opening" android:key="expandOnLaunch" android:defaultValue="0" android:title="Expand on launch" android:summaryOff="Launch URLs unmodified"/>
-    
-
+    <ListPreference android:entries="@array/launchimmEntries" android:title="Store/launch" android:key="launchimm" android:entryValues="@array/launchimmValues" android:summary="Decide whether to store or launch"/>
 </PreferenceScreen>
