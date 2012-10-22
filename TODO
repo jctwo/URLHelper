@@ -19,8 +19,6 @@ so investigate other options.
 
 * Add details view for a URL (to show original, etc.)
 
-* Add "URL opened" field (with icon?) to list.
-
 * Handle https fully
 
 * Fix problem with relative URIs

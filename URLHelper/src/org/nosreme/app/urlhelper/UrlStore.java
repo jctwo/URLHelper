@@ -171,6 +171,18 @@ public class UrlStore {
 		
 		return;    
     }
+    public void setSeen(long id, boolean seen)
+    {
+    	SQLiteDatabase db = dbhelper.getWritableDatabase();
+
+    	ContentValues values = new ContentValues();
+        values.put("seen", seen? 1 : 0);  
+
+		db.update(URLSTORE_TABLE_NAME, values, "_id = " + Long.toString(id), null); 
+		db.close();
+		
+		return;    
+    }
     public void setUrlExpansion(long id, String newVal)
     {
     	SQLiteDatabase db = dbhelper.getWritableDatabase();

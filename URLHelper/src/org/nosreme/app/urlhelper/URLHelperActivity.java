@@ -17,6 +17,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -67,12 +68,13 @@ public class URLHelperActivity extends ListActivity {
         	if (expanded != null)
         	{
         		/* Save the expanded URL for later */
-				urlstore.setUrl(id, expanded);
+				urlstore.setUrlExpansion(id, expanded);
 
                 urlString = expanded;
         	}
         }
 
+        urlstore.setSeen(id, true);
         launchUrl(urlString);
 	}
 	
@@ -349,6 +351,21 @@ public class URLHelperActivity extends ListActivity {
 				    tv.setText(DateFormat.format("MMMM dd, yyyy k:mm", cursor.getLong(cursor.getColumnIndex("time"))));
 				    return true;
 				}
+				else if (column == UrlStore.COL_URL)
+				{
+				    TextView tv = (TextView)view;
+				    tv.setText(cursor.getString(cursor.getColumnIndex("url")));
+				    if (cursor.getInt(cursor.getColumnIndex("seen")) == 0)
+				    {
+				        tv.setTypeface(null, Typeface.BOLD);
+				    }
+				    else
+				    {
+				    	tv.setTypeface(null, Typeface.NORMAL);
+				    }
+				    return true;
+					
+				}
 				return false;
 			}
 			
@@ -392,7 +409,7 @@ public class URLHelperActivity extends ListActivity {
 			String url = urlstore.getUrl(info.id);
 			String expanded = expandUrl(url, true);
 			if (expanded != null) {
-				urlstore.setUrl(info.id, expanded);
+				urlstore.setUrlExpansion(info.id, expanded);
 				cursor.requery();
 				Toast t = Toast.makeText(getApplicationContext(),
 						"URL expanded", Toast.LENGTH_SHORT);
