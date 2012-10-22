@@ -25,8 +25,6 @@ so investigate other options.
 
 * Fix problem with relative URIs
 
-* Sort newest at top?
-
 * Fix "database not closed" issues.
 
 * Accept "Share" intents?

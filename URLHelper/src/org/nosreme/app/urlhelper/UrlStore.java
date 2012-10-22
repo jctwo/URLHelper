@@ -100,10 +100,9 @@ public class UrlStore {
     
     public Cursor getUrlCursor()
     {
-    	SQLiteDatabase db = dbhelper.getWritableDatabase();
-    	db = dbhelper.getReadableDatabase();
+    	SQLiteDatabase db = dbhelper.getReadableDatabase();
     	
-    	Cursor cursor = db.query(URLSTORE_TABLE_NAME, cols, null, null, null, null, null);
+    	Cursor cursor = db.query(URLSTORE_TABLE_NAME, cols, null, null, null, null, "-time");
     	
     	return cursor;
     }
