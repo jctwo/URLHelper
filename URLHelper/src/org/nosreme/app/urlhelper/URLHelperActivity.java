@@ -9,6 +9,7 @@ import java.util.Map;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,6 +17,8 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -238,8 +241,6 @@ public class URLHelperActivity extends ListActivity {
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(getApplicationContext());
 
-		boolean offlineSetting = prefs.getBoolean("offline", true);
-
 		UrlStore urlstore = new UrlStore(getApplicationContext());
 
 		Intent intent = getIntent();
@@ -254,7 +255,7 @@ public class URLHelperActivity extends ListActivity {
 		 */
 		boolean haveUrl = intent.getAction().equals(
 				android.content.Intent.ACTION_VIEW);
-		boolean willLaunch = haveUrl && !offlineSetting && !restarting;  /* We're online and have a new URL */
+		boolean willLaunch = haveUrl && !restarting && isOnline(prefs);  /* We're online and have a new URL */
 
 		if (!willLaunch) {
 			/*
@@ -265,23 +266,6 @@ public class URLHelperActivity extends ListActivity {
 				urlstore.addUrl(intent.getDataString());
 			}
 			setContentView(R.layout.main);
-
-			ToggleButton button = (ToggleButton) findViewById(R.id.toggleOffline);
-			button.setChecked(offlineSetting);
-			button.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-				public void onCheckedChanged(CompoundButton buttonView,
-						boolean isChecked) {
-					SharedPreferences prefs = PreferenceManager
-							.getDefaultSharedPreferences(getApplicationContext());
-
-					Log.v("URLHandler", "on click value: " + isChecked);
-					prefs.edit().putBoolean("offline", isChecked).commit();
-					Log.v("URLHandler",
-							"committed (count = " + prefs.getInt("count", -1));
-				}
-
-			});
 		}
 
 		/* If online, simply relaunch it. */
@@ -293,6 +277,42 @@ public class URLHelperActivity extends ListActivity {
 			showList(urlstore);
 		}
 
+	}
+
+	/* Check whether we're online or not. */
+	private boolean isOnline(SharedPreferences prefs) {
+		boolean online;
+		String launchSetting = prefs.getString("launchimm", "never");
+		/* Carefully check the easy ones first; this means that if, say, a
+		 * CyanogenMod user disables the ACCESS_NETWORK_STATE permission we
+		 * won't crash if it's unavailable.
+		 */
+		if (launchSetting.equals("never"))
+		{
+			online = false;
+		}
+		else if (launchSetting.equals("always"))
+		{
+		    online = true;
+		}
+		else /* launchimm == wifi */
+		{
+			Context context = getApplicationContext();
+			ConnectivityManager cman = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo info = cman.getActiveNetworkInfo();
+			if ((info != null) &&
+			    (info.getType() == ConnectivityManager.TYPE_WIFI) &&
+			    info.isConnected())
+			{
+			    online = true;
+			}
+			else
+			{
+				online = false;
+			}
+			
+		}
+		return online;
 	}
 
 	private void showList(UrlStore urlstore) {
