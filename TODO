@@ -14,10 +14,6 @@ so that it doesn't block the UI.
 
 * Various tidy-ups.
 
-* Work out how to display the add time/date field in a sensible way in the
-list.  This looks useful:
-  http://stackoverflow.com/questions/4776936/modifying-simplecursoradapters-data
-
 * SimpleCursorAdapter constructor is deprecated according to the documentation,
 so investigate other options.
 

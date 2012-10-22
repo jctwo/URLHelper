@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -35,6 +36,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -333,8 +335,25 @@ public class URLHelperActivity extends ListActivity {
 
 		int[] to = { R.id.tv1, R.id.tv2 };
 
-		setListAdapter(new SimpleCursorAdapter(getApplicationContext(),
-				R.layout.urllist, cursor, colFields, to));
+		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getApplicationContext(),
+														R.layout.urllist, cursor, colFields, to);
+		/* Thanks to:
+		 * http://stackoverflow.com/questions/4776936/modifying-simplecursoradapters-data
+		 */
+		adapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+			//@Override
+			public boolean setViewValue(View view, Cursor cursor, int column) {
+				if (column == UrlStore.COL_TIME)
+				{
+				    TextView tv = (TextView)view;
+				    tv.setText(DateFormat.format("MMMM dd, yyyy k:mm", cursor.getLong(cursor.getColumnIndex("time"))));
+				    return true;
+				}
+				return false;
+			}
+			
+		});
+		setListAdapter(adapter);
 
 		ListView lv = getListView();
 

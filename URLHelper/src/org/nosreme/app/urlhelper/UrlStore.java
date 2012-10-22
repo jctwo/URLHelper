@@ -90,8 +90,13 @@ public class UrlStore {
     	dbhelper = new DbHelper(context);
     }
     
-    private String[] cols = new String[] { "_id", "url", "seen", "expanded", "time" };
-    private String[] handlerCols = new String[] { "_id", "optionsKey", "packageName", "name" };
+    private static final String[] cols = new String[] { "_id", "url", "seen", "expanded", "time" };
+    public static final int COL_ID = 0;
+    public static final int COL_URL = 1;
+    public static final int COL_SEEN = 2;
+    public static final int COL_EXPANDED = 3;
+    public static final int COL_TIME = 4;
+    private static final String[] handlerCols = new String[] { "_id", "optionsKey", "packageName", "name" };
     
     public Cursor getUrlCursor()
     {
