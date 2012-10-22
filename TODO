@@ -27,8 +27,6 @@ so investigate other options.
 
 * Handle https fully
 
-* Refresh list when returning to activity.
-
 * Fix problem with relative URIs
 
 * Sort newest at top?

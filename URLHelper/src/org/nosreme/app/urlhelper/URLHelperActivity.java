@@ -281,6 +281,16 @@ public class URLHelperActivity extends ListActivity {
 		}
 
 	}
+	
+	@Override
+	protected void onRestart()
+	{
+		super.onRestart();
+		/* Update the list, which may have changed (by other invokations, or
+		 * for example if we expand on launch.)
+		 */
+		cursor.requery();
+	}
 
 	/* Check whether we're online or not. */
 	private boolean isOnline(SharedPreferences prefs) {
