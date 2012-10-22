@@ -26,3 +26,5 @@ so investigate other options.
 * Fix "database not closed" issues.
 
 * Accept "Share" intents?
+
+* Add option to mark URL as unseen.
