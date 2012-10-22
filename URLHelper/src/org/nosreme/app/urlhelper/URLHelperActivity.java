@@ -64,6 +64,9 @@ public class URLHelperActivity extends ListActivity {
         	String expanded = expandUrl(urlString, true);
         	if (expanded != null)
         	{
+        		/* Save the expanded URL for later */
+				urlstore.setUrl(id, expanded);
+
                 urlString = expanded;
         	}
         }
