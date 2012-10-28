@@ -17,7 +17,12 @@ so that it doesn't block the UI.
 * SimpleCursorAdapter constructor is deprecated according to the documentation,
 so investigate other options.
 
-* Add details view for a URL (to show original, etc.)
+* Add to item context menu:
+    * Add details view for a URL (to show original, etc.)
+    * Add "launch with..." (avoiding default)
+    * Add "Share..."
+    * Add option to mark URL as unseen.
+    * Add "Copy old/new URL to clipboard"
 
 * Handle https fully
 
@@ -26,5 +31,3 @@ so investigate other options.
 * Fix "database not closed" issues.
 
 * Accept "Share" intents?
-
-* Add option to mark URL as unseen.
