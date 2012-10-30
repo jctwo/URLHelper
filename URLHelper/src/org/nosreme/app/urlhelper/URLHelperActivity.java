@@ -277,7 +277,18 @@ public class URLHelperActivity extends ListActivity {
 
 		/* If online, simply relaunch it. */
 		if (willLaunch) {
-			launchUrl(intent.getDataString());
+	        boolean expand = prefs.getBoolean("expandOnLaunch", false);
+	        String url = intent.getDataString();
+
+	        if (expand)
+	        {
+			    String expanded = expandUrl(url, true);
+			    if (expanded != null)
+			    {
+			        url = expanded;
+			    }
+	        }
+			launchUrl(url);
 			/* And exit - nothing else to do once we've launched the URL again. */
 			finish();
 		} else {
