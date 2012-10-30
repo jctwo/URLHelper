@@ -90,7 +90,7 @@ public class UrlStore {
     	dbhelper = new DbHelper(context);
     }
     
-    private static final String[] cols = new String[] { "_id", "url", "seen", "expanded", "time" };
+    private static final String[] cols = new String[] { "_id", "url", "seen", "expanded", "time", "orig_url" };
     public static final int COL_ID = 0;
     public static final int COL_URL = 1;
     public static final int COL_SEEN = 2;
@@ -153,6 +153,12 @@ public class UrlStore {
     	cursor.moveToFirst();
     	return cursor.getString(1);
     }
+	public String getOrigUrl(long id) {
+    	SQLiteDatabase db = dbhelper.getReadableDatabase();
+    	Cursor cursor = db.query(URLSTORE_TABLE_NAME, cols, "_id = " + Long.toString(id), null, null, null, null);
+    	cursor.moveToFirst();
+    	return cursor.getString(5);
+	}
 	public boolean isExpanded(long id) {
     	SQLiteDatabase db = dbhelper.getReadableDatabase();
     	Cursor cursor = db.query(URLSTORE_TABLE_NAME, cols, "_id = " + Long.toString(id), null, null, null, null);

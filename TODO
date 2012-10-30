@@ -18,7 +18,6 @@ so that it doesn't block the UI.
 so investigate other options.
 
 * Add to item context menu:
-    * Add details view for a URL (to show original, etc.)
     * Add "launch with..." (avoiding default)
     * Add "Share..."
     * Add option to mark URL as unseen.

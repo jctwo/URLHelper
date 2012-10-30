@@ -432,6 +432,12 @@ public class URLHelperActivity extends ListActivity {
 			}
 			return true;
 		}
+		case R.id.details: {
+		    Intent intent = new Intent(this, DetailsActivity.class);
+		    intent.putExtra("urlid", info.id);
+		    startActivity(intent);
+		    return true;
+		}
 		default:
 			return super.onContextItemSelected(item);
 		}
