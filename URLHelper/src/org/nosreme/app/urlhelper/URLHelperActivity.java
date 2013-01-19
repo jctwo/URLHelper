@@ -33,14 +33,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
-
 import org.nosreme.app.urlhelper.UrlStore;
 
 public class URLHelperActivity extends ListActivity {
@@ -273,6 +269,15 @@ public class URLHelperActivity extends ListActivity {
 				urlstore.addUrl(intent.getDataString());
 			}
 			setContentView(R.layout.main);
+			
+			{
+				LuaTest lt = new LuaTest();
+				
+				String result = lt.runString("s = \"\";  for k,v in pairs(_G) do s = s .. ' ' .. k end return s");
+				
+				Toast t = Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG);
+				t.show();
+			}
 		}
 
 		/* If online, simply relaunch it. */
