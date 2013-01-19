@@ -251,6 +251,17 @@ public class URLHelperActivity extends ListActivity {
 		UrlStore urlstore = new UrlStore(getApplicationContext());
 
 		Intent intent = getIntent();
+		if (savedInstanceState == null && intent.getAction().equals(android.content.Intent.ACTION_SEND))
+		{
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+			// 2. Chain together various setter methods to set the dialog characteristics
+			builder.setMessage("Type: " + intent.getType() + "\nText: " + intent.getStringExtra(Intent.EXTRA_TEXT) +
+					"\nSubject: " + intent.getStringExtra(Intent.EXTRA_SUBJECT) + "\n");
+			// 3. Get the AlertDialog from create()
+			AlertDialog dialog = builder.create();
+		    dialog.show();
+		}
 		
 		/* If we're restarting, then reinitialise the UI and so on (and refresh it!), but don't
 		 * launch anything or write anything to the database, as it's been done already.
