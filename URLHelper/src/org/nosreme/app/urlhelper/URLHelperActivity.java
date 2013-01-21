@@ -271,10 +271,10 @@ public class URLHelperActivity extends ListActivity {
 			}
 			setContentView(R.layout.main);
 			
-			{
-				LuaEngine lt = new LuaEngine();
-				
+			{	
 				Context ctx = getApplicationContext();
+			
+				LuaEngine lt = new LuaEngine(ctx);
 				
 				String result;
 				try {

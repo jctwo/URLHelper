@@ -1,4 +1,4 @@
-require 'mod1'
+local mod1 = require 'mod1'
 
 s = ""
 for k,v in pairs(_G)

@@ -8,17 +8,46 @@ import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
+import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 
 public class LuaEngine {
 	private Globals fullGlobals;
 	private LuaValue _G;
+	private Context ctx;
 	
 	private static void copyField(LuaValue dst, LuaValue src, String key)
 	{
 		dst.set(key, src.get(key));
+	}
+	private class assetSearcher extends VarArgFunction {
+		private AssetManager assets;
+		public assetSearcher(AssetManager assetman)
+		{
+			assets = assetman;
+		}
+		public Varargs invoke(Varargs args)
+		{
+			if (args.checkstring(1) == null)
+			{
+				return NIL;
+			}
+			String modname = args.tojstring(1);
+
+			try {
+			    InputStream stream = assets.open("lua/" + modname + ".lua");
+			    return loadStreamRaw(stream, _G);
+			} catch (IOException e) {
+				return NIL;
+			}
+			    
+		}
+		
 	}
 	protected final String[] wantedGlobals = {
 			"unpack",
@@ -53,6 +82,8 @@ public class LuaEngine {
 	public LuaValue createGlobals()
 	{
 	    fullGlobals = JsePlatform.standardGlobals();
+	    
+	    fullGlobals.package_.searchers.set(2, new assetSearcher(ctx.getAssets()));
 	    //LuaValue g = new LuaTable();
 	    LuaValue g = new LuaTable();
 	    
@@ -65,8 +96,9 @@ public class LuaEngine {
 	   
 	    return g;
 	}
-	public LuaEngine()
+	public LuaEngine(Context context)
 	{
+		ctx = context;
 		_G = createGlobals();
 	}
 	public String runStreamPrivileged(InputStream stream)
@@ -76,6 +108,15 @@ public class LuaEngine {
 	public String runStream(InputStream stream)
 	{
 		return runStreamInt(stream, _G);
+	}
+	private LuaValue loadStreamRaw(InputStream stream, LuaValue globals)
+	{
+		try {
+			LuaValue chunk = fullGlobals.compiler.load(stream, "", globals);
+			return chunk;
+		} catch (IOException e) {
+		    return null;
+		}
 	}
 	private String runStreamInt(InputStream stream, LuaValue globals)
 	{
