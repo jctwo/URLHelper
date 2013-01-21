@@ -271,16 +271,14 @@ public class URLHelperActivity extends ListActivity {
 			setContentView(R.layout.main);
 			
 			{
-				LuaTest lt = new LuaTest();
+				LuaEngine lt = new LuaEngine();
+				
+				Context ctx = getApplicationContext();
 				
 				String result;
-				//result = lt.runString("return 4+5");
+				result = lt.runStream(ctx.getResources().openRawResource(R.raw.lua_startup));
 				
-				//Toast t = Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG);
-				//t.show();
-				result = lt.runString("s = \"\";  for k,v in pairs(_G) do s = s .. ' ' .. k end return s");
-				
-				Toast t2 = Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG);
+				Toast t2 = Toast.makeText(ctx, result, Toast.LENGTH_LONG);
 				t2.show();
 			}
 		}

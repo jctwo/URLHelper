@@ -2,6 +2,7 @@ package org.nosreme.app.urlhelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaError;
@@ -9,9 +10,9 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
-import android.util.Log;
+import android.content.res.Resources;
 
-public class LuaTest {
+public class LuaEngine {
 	private Globals fullGlobals;
 	private LuaValue _G;
 	
@@ -64,14 +65,14 @@ public class LuaTest {
 	   
 	    return g;
 	}
-	public LuaTest()
+	public LuaEngine()
 	{
 		_G = createGlobals();
 	}
-	public String runString(String script)
+	public String runStream(InputStream stream)
 	{
 		try {
-		    LuaValue chunk = fullGlobals.compiler.load(new ByteArrayInputStream(script.getBytes()), "", _G);
+		    LuaValue chunk = fullGlobals.compiler.load(stream, "", _G);
 		    LuaValue lResult = chunk.call();
 		
 		    return lResult.toString();
@@ -79,6 +80,11 @@ public class LuaTest {
 			return e.getMessage();
 		} catch (IOException e) {
 			return null;
-		}
+		}	
 	}
+	public String runString(String script)
+	{
+		return runStream(new ByteArrayInputStream(script.getBytes()));
+	}
+
 }
