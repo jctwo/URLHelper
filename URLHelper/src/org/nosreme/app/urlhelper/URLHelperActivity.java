@@ -1,5 +1,6 @@
 package org.nosreme.app.urlhelper;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
@@ -276,7 +277,11 @@ public class URLHelperActivity extends ListActivity {
 				Context ctx = getApplicationContext();
 				
 				String result;
-				result = lt.runStream(ctx.getResources().openRawResource(R.raw.lua_startup));
+				try {
+				result = lt.runStreamPrivileged(ctx.getResources().getAssets().open("lua/startup.lua"));
+				} catch (IOException e) {
+				   result = "failed";
+				}
 				
 				Toast t2 = Toast.makeText(ctx, result, Toast.LENGTH_LONG);
 				t2.show();

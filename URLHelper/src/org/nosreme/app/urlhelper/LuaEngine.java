@@ -69,10 +69,18 @@ public class LuaEngine {
 	{
 		_G = createGlobals();
 	}
+	public String runStreamPrivileged(InputStream stream)
+	{
+	    return runStreamInt(stream, fullGlobals);
+	}
 	public String runStream(InputStream stream)
 	{
+		return runStreamInt(stream, _G);
+	}
+	private String runStreamInt(InputStream stream, LuaValue globals)
+	{
 		try {
-		    LuaValue chunk = fullGlobals.compiler.load(stream, "", _G);
+		    LuaValue chunk = fullGlobals.compiler.load(stream, "", globals);
 		    LuaValue lResult = chunk.call();
 		
 		    return lResult.toString();
