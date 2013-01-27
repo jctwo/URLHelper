@@ -14,7 +14,6 @@ import org.luaj.vm2.lib.jse.JsePlatform;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.content.res.Resources;
 
 public class LuaEngine {
 	private Globals fullGlobals;
