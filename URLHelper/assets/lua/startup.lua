@@ -1,8 +1,5 @@
-local mod1 = require 'mod1'
+local _G = _G
 
-s = ""
-for k,v in pairs(_G)
-do
-   s = s .. ' ' .. k
-end
-return s .. mod1.test()
+Toast = luajava.bindClass("android.widget.Toast")
+t = Toast:makeText(ctx, "Test toast", Toast.LENGTH_LONG)
+t:show()
