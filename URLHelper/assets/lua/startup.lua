@@ -1,8 +1,23 @@
-local mod1 = require 'mod1'
+local _G = _G
 
-s = ""
-for k,v in pairs(_G)
 do
-   s = s .. ' ' .. k
+    local Toast = luajava.bindClass("android.widget.Toast")
+    local PreferenceManager = luajava.bindClass("android.preference.PreferenceManager")
+    local SharedPrefs = PreferenceManager:getDefaultSharedPreferences(ctx)
+    
+    function _G.toast(msg)
+      t = Toast:makeText(ctx, msg, Toast.LENGTH_LONG)
+      t:show()
+    end
+    
+    _G.prefs = setmetatable({},
+                            {
+                               __index = function(t, key)
+                                   -- Should the default be different?
+                                   return SharedPrefs:getString(key, "")
+                                end
+                            })                                 
 end
-return s .. mod1.test()
+
+x = prefs["launchimm"]
+toast(x)

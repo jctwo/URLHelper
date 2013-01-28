@@ -277,12 +277,12 @@ public class URLHelperActivity extends ListActivity {
 				LuaEngine lt = new LuaEngine(ctx);
 				
 				String result;
-				try {
-				result = lt.runStreamPrivileged(ctx.getResources().getAssets().open("lua/startup.lua"));
-				} catch (IOException e) {
-				   result = "failed";
-				}
 				
+				try {
+				    result = lt.runStreamPrivileged(ctx.getResources().getAssets().open("lua/startup.lua"));
+				} catch (IOException e) {
+				    result = "failed";
+				}				
 				Toast t2 = Toast.makeText(ctx, result, Toast.LENGTH_LONG);
 				t2.show();
 			}

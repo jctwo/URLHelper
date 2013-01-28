@@ -10,6 +10,7 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import android.content.Context;
@@ -83,6 +84,9 @@ public class LuaEngine {
 	    fullGlobals = JsePlatform.standardGlobals();
 	    
 	    fullGlobals.package_.searchers.set(2, new assetSearcher(ctx.getAssets()));
+	    
+	    // Create the privileged reference to ctx
+	    fullGlobals.set("ctx", CoerceJavaToLua.coerce(ctx));
 	    //LuaValue g = new LuaTable();
 	    LuaValue g = new LuaTable();
 	    
