@@ -16,8 +16,17 @@ do
                                    -- Should the default be different?
                                    return SharedPrefs:getString(key, "")
                                 end
-                            })                                 
+                            })
+    function _G.getStore()
+         toast("foo")
+         local UrlStore = luajava.bindClass("org.nosreme.app.urlhelper.UrlStore")
+         toast("bar")
+         local urlStore = luajava.newInstance("org.nosreme.app.urlhelper.UrlStore", ctx)
+         return urlStore
+    end
 end
 
 x = prefs["launchimm"]
-toast(x)
+toast("Current mode: " .. x)
+store = getStore()
+toast(store:getUrl(1))

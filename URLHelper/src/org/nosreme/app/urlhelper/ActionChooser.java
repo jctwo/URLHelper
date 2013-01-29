@@ -2,7 +2,7 @@ package org.nosreme.app.urlhelper;
 import android.app.*;
 import android.os.Bundle;
 
-public class ActionChooser : extends Activity
+public class ActionChooser extends Activity
 {
 	/** Called when the activity is first created. */
 	@Override
