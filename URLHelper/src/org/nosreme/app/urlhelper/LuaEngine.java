@@ -87,6 +87,7 @@ public class LuaEngine {
 	    
 	    // Create the privileged reference to ctx
 	    fullGlobals.set("ctx", CoerceJavaToLua.coerce(ctx));
+	    fullGlobals.set("UrlStore", CoerceJavaToLua.coerce(UrlStore.class));
 	    //LuaValue g = new LuaTable();
 	    LuaValue g = new LuaTable();
 	    

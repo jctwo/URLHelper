@@ -18,10 +18,7 @@ do
                                 end
                             })
     function _G.getStore()
-         toast("foo")
-         local UrlStore = luajava.bindClass("org.nosreme.app.urlhelper.UrlStore")
-         toast("bar")
-         local urlStore = luajava.newInstance("org.nosreme.app.urlhelper.UrlStore", ctx)
+         local urlStore = luajava.new(UrlStore, ctx)
          return urlStore
     end
 end
