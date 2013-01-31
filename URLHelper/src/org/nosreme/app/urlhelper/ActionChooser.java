@@ -16,5 +16,6 @@ public class ActionChooser extends Activity
 	
 	public void buttonCancel(View view) {
 	    finish();
-	}
+	}
+	
 }
