@@ -44,7 +44,8 @@ public class URLHelperActivity extends ListActivity {
 	private final String[] colFields = { "url", "time" };
 
 	private final int REQ_CHOOSE_INTENT = 0;
-
+        private final int REQ_CHOOSE_ACTION = 1;
+    
 	private Cursor cursor;
 
 	private String intentOptionsStr = null;
@@ -534,7 +535,9 @@ public class URLHelperActivity extends ListActivity {
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		launchItem(id);
+		//launchItem(id);
+		Intent intent = new Intent(this, ActionChooser.class);
+		startActivityForResult(intent, REQ_CHOOSE_ACTION, null);
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
