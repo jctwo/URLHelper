@@ -4,30 +4,65 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-	
-    <LinearLayout
-        android:layout_width="match_parent"
+    <RadioGroup
+        android:id="@+id/radioGroup1"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" >
 
-        <Button
-            android:id="@+id/choose_open"
+        <RadioButton
+            android:id="@+id/radio_openwith"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Open" />
+            android:checked="true"
+            android:text="Open with..." />
 
-        <Button
-            android:id="@+id/choose_save"
+        <Spinner
+            android:id="@+id/spinner_openwith"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <RadioButton
+            android:id="@+id/radio_expand"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Save" />
+            android:text="Follow redirects" />
 
-        <Button
-            android:id="@+id/choose_cancel"
+        <RadioButton
+            android:id="@+id/radio_advanced"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancel"
-	    android:onClick="buttonCancel"/>
+            android:text="Advanced" />
+    </RadioGroup>
 
-    </LinearLayout>
+    <Button
+        android:id="@+id/choose_open"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OK"
+        android:onClick="buttonOk" />
+
+    <CheckBox
+        android:id="@+id/check_addrule"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add rule" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="URL Pattern (regex)"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <MultiAutoCompleteTextView
+        android:id="@+id/multiAutoCompleteTextView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:text="MultiAutoCompleteTextView" >
+
+        <requestFocus />
+    </MultiAutoCompleteTextView>
 
 </LinearLayout>

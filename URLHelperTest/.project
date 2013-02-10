@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>URLExpander</name>
+	<name>URLHelperTest</name>
 	<comment></comment>
 	<projects>
+		<project>URLHelper</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
