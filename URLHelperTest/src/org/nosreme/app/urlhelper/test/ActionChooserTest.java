@@ -5,13 +5,14 @@ import java.lang.reflect.Field;
 import org.nosreme.app.urlhelper.ActionChooser;
 
 import android.app.Activity;
-import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 
 public class ActionChooserTest extends
 		ActivityInstrumentationTestCase2<ActionChooser> {
@@ -88,7 +89,51 @@ public class ActionChooserTest extends
 		ActivityResult result = getResult(activity);
 		assertEquals(result.code, Activity.RESULT_OK);	  
 	}
-	
+
+	public void testVisible() {
+		Context context = this.getInstrumentation().getTargetContext().getApplicationContext();
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com/"), context, ActionChooser.class);
+		
+	    setActivityIntent(intent);
+	    
+	    ActionChooser activity = getActivity();
+	    
+	    final CheckBox ruleCb = (CheckBox)activity.findViewById(org.nosreme.app.urlhelper.R.id.check_addrule);
+	    View regex_label = activity.findViewById(org.nosreme.app.urlhelper.R.id.title_ruleregex);
+	    View regex_entry = activity.findViewById(org.nosreme.app.urlhelper.R.id.multi_ruleregex);
+
+	    /* Assume it starts unchecked */
+	    assert !ruleCb.isChecked();
+	    assertEquals(regex_label.getVisibility(), View.GONE);
+	    assertEquals(regex_entry.getVisibility(), View.GONE);
+	    
+		activity.runOnUiThread(new Runnable() {
+			public void run() {
+				ruleCb.requestFocus();
+			}
+		});
+   		getInstrumentation().waitForIdleSync();
+   		sendKeys(KeyEvent.KEYCODE_DPAD_CENTER);
+   		
+   		/* They should now be visible */
+	    assert ruleCb.isChecked();
+	    assertEquals(regex_label.getVisibility(), View.VISIBLE);
+	    assertEquals(regex_entry.getVisibility(), View.VISIBLE);
+
+	    activity.runOnUiThread(new Runnable() {
+			public void run() {
+				ruleCb.requestFocus();
+			}
+		});
+   		getInstrumentation().waitForIdleSync();
+   		sendKeys(KeyEvent.KEYCODE_DPAD_CENTER);
+
+   		/* And invisible again */
+	    assert !ruleCb.isChecked();
+	    assertEquals(regex_label.getVisibility(), View.GONE);
+	    assertEquals(regex_entry.getVisibility(), View.GONE);
+	}
+
 	public void testCancel() {
 		Context context = this.getInstrumentation().getTargetContext().getApplicationContext();
 		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com/"), context, ActionChooser.class);

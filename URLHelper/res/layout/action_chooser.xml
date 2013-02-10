@@ -46,17 +46,18 @@
         android:id="@+id/check_addrule"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add rule" />
+        android:text="Add rule"
+        android:onClick="ruleCheckClicked" />
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/title_ruleregex"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="URL Pattern (regex)"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <MultiAutoCompleteTextView
-        android:id="@+id/multiAutoCompleteTextView1"
+        android:id="@+id/multi_ruleregex"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
