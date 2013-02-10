@@ -40,6 +40,10 @@ public class ActionChooserTest extends
 	    
 	    ActionChooser activity = getActivity();
 	    
+	    /* Thanks to 
+             * http://stackoverflow.com/questions/5569830/get-result-from-an-activity-after-finish-in-an-android-unit-test
+	     * for this way of finding the activity result.  There *must* be a
+	     * better way... */
 	    final Button okButton = (Button)activity.findViewById(org.nosreme.app.urlhelper.R.id.choose_open);
 	    
 	    //okButton.requestFocus();
