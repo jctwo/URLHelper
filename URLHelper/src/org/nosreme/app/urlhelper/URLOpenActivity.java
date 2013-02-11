@@ -33,6 +33,7 @@ public class URLOpenActivity extends ListActivity {
 	/* Launch a URL using the configured browser. */
 	private void launchUrl(String urlString)
 	{
+		/* TODO: switch to IntentResolver if still needed */
     	PackageManager pm = getPackageManager();
     	Uri uri = Uri.parse(urlString);
     	Intent intent = new Intent();
