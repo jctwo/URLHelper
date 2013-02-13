@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.util.Log;
 
 /* Utility class for looking up lists of possible activities
  * with appropriate filtering.  */
@@ -15,16 +16,18 @@ public class IntentResolver {
 	private PackageManager pm;
 
 	/* The array of ActivityInfo instances */
-	private ResolveInfo[] activitylist;
-	/* The size of activitylist */
+	private ResolveInfo[] activityList;
+	/* The size of activityList */
 	private int activityCount = 0;
 	/* The number actually stored in the list */
 	private int activitiesFound = 0;
+	/* The initial URL */
+	private Uri uri;
 	
     public IntentResolver(PackageManager pman, String urlString)
     {
     	pm = pman;
-    	Uri uri = Uri.parse(urlString);
+    	uri = Uri.parse(urlString);
     	Intent intent = new Intent();
     	intent.setComponent(null);
     	
@@ -37,7 +40,7 @@ public class IntentResolver {
     	List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
     	
     	activityCount = activities.size();
-    	activitylist = new ResolveInfo[activityCount];
+    	activityList = new ResolveInfo[activityCount];
 
     	for (ResolveInfo ri: activities)
     	{
@@ -48,10 +51,41 @@ public class IntentResolver {
     			Intent actIntent = new Intent();
     			actIntent.setClassName(ai.packageName, ai.name);
     			*/
-    			activitylist[activitiesFound] = ri;
+    			activityList[activitiesFound] = ri;
     			activitiesFound += 1;
     		}
     	}
 
+    }
+    
+    /* Return the number of items in the list. */
+    public int count()
+    {
+    	return activitiesFound;
+    }
+    
+    /* Return the activity readable name */
+    public String getHumanName(int index)
+    {
+    	assert index < activitiesFound;
+    	
+    	return activityList[index].loadLabel(pm).toString();
+    }
+    
+    /* Return an explicit Intent to launch the URL with a chosen
+     * item. */
+    public Intent getIntent(int index)
+    {
+    	assert index < activitiesFound;
+    	ResolveInfo ri = activityList[index];
+    	
+    	Intent intent = new Intent();
+    	intent.setData(uri);
+    	intent.setAction(android.content.Intent.ACTION_VIEW);
+    	Log.v("TestResolve", "package" + ri.activityInfo.packageName);
+    	Log.v("TestResolve", "name" + ri.activityInfo.name);
+    	intent.setClassName(ri.activityInfo.packageName, ri.activityInfo.name);
+
+    	return intent;
     }
 }
