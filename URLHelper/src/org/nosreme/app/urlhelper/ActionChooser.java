@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.CheckBox;
+import android.widget.RadioButton;
+import android.widget.Spinner;
 
 
 public class ActionChooser extends Activity
@@ -27,6 +29,11 @@ public class ActionChooser extends Activity
 		int vis = addRuleCb.isChecked()? View.VISIBLE : View.GONE;
 		ruleLabel.setVisibility(vis);
 		ruleEntry.setVisibility(vis);
+		
+		/* Enable/disable activity spinner */
+		RadioButton openRad = (RadioButton)findViewById(R.id.radio_openwith);
+		Spinner activitySpinner = (Spinner)findViewById(R.id.spinner_openwith);
+		activitySpinner.setEnabled(openRad.isChecked());
 	}
 	
 	/* Called when the "OK" button is pressed */
@@ -35,6 +42,11 @@ public class ActionChooser extends Activity
 		Intent intent = new Intent();
 		setResult(RESULT_OK, intent);
 		finish();
+	}
+	/* Called when one of the action radio buttons is clicked. */
+	public void radioClicked(View v)
+	{
+        updateVisibleWidgets();				
 	}
 	/* Called when the "add rule" checkbox is clicked. */
 	public void ruleCheckClicked(View v)

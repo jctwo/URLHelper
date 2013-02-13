@@ -37,6 +37,5 @@ public class IntentResolverTest extends AndroidTestCase {
 			assertFalse(compName.getPackageName().equals("org.nosreme.app.urlhelper"));
 		}
 		assertTrue(browserFound);
-
 	}
 }

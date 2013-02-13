@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.RadioButton;
 
 public class ActionChooserTest extends
 		ActivityInstrumentationTestCase2<ActionChooser> {
@@ -103,7 +104,7 @@ public class ActionChooserTest extends
 	    View regex_entry = activity.findViewById(org.nosreme.app.urlhelper.R.id.multi_ruleregex);
 
 	    /* Assume it starts unchecked */
-	    assert !ruleCb.isChecked();
+	    assertFalse(ruleCb.isChecked());
 	    assertEquals(regex_label.getVisibility(), View.GONE);
 	    assertEquals(regex_entry.getVisibility(), View.GONE);
 	    
@@ -116,7 +117,7 @@ public class ActionChooserTest extends
    		sendKeys(KeyEvent.KEYCODE_DPAD_CENTER);
    		
    		/* They should now be visible */
-	    assert ruleCb.isChecked();
+	    assertTrue(ruleCb.isChecked());
 	    assertEquals(regex_label.getVisibility(), View.VISIBLE);
 	    assertEquals(regex_entry.getVisibility(), View.VISIBLE);
 
@@ -129,9 +130,34 @@ public class ActionChooserTest extends
    		sendKeys(KeyEvent.KEYCODE_DPAD_CENTER);
 
    		/* And invisible again */
-	    assert !ruleCb.isChecked();
+	    assertFalse(ruleCb.isChecked());
 	    assertEquals(regex_label.getVisibility(), View.GONE);
 	    assertEquals(regex_entry.getVisibility(), View.GONE);
+	    
+	    /* Now check that the "Open with..." spinner is enabled at the right
+	     * times. */
+	    View spinner = (View)activity.findViewById(org.nosreme.app.urlhelper.R.id.spinner_openwith);
+	    RadioButton openRad = (RadioButton)activity.findViewById(org.nosreme.app.urlhelper.R.id.radio_openwith);
+	    final RadioButton expandRad = (RadioButton)activity.findViewById(org.nosreme.app.urlhelper.R.id.radio_expand);
+	    assertNotNull(openRad);
+	    assertNotNull(spinner);
+	    /* Should start with this one selected */
+	    assertTrue(openRad.isChecked());
+	    assertFalse(expandRad.isChecked());
+	    assertTrue(spinner.isEnabled());
+	    
+	    /* Select another radio button, and check the spinner is disabled. */
+	    activity.runOnUiThread(new Runnable() {
+			public void run() {
+				expandRad.requestFocus();
+			}
+		});
+   		getInstrumentation().waitForIdleSync();
+   		sendKeys(KeyEvent.KEYCODE_DPAD_CENTER);
+   		
+   		assertFalse(openRad.isChecked());
+	    assertTrue(expandRad.isChecked());
+	    assertFalse(spinner.isEnabled());	    
 	}
 
 	public void testCancel() {
