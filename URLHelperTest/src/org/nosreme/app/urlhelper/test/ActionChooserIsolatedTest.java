@@ -31,30 +31,30 @@ public class ActionChooserIsolatedTest extends
 	
 	/* Fake package manager with known contents */
 	public class FakePackageManager extends MockPackageManager {
-	    @Override
-	    public List<ResolveInfo> queryIntentActivities(Intent intent, int flags) {
-	    	ArrayList<ResolveInfo> l = new ArrayList<ResolveInfo>();
-	    	
+		private ResolveInfo makeInfo(String humanName,
+				                            String pkg,
+				                            String compName)
+		{
 	    	ResolveInfo ri;
 	    	ActivityInfo ai;
 
 	    	ri = new ResolveInfo();
 	    	ai = new ActivityInfo();
-	    	ai.name = "org.nosreme.app.urlhelper.URLHelper";
+	    	ai.name = compName;
+	    	ai.packageName = pkg;
+	    	ri.nonLocalizedLabel = humanName;
 	    	ri.activityInfo = ai;
-	    	l.add(ri);
+			
+	    	return ri;
+		}
+		
+	    @Override
+	    public List<ResolveInfo> queryIntentActivities(Intent intent, int flags) {
+	    	ArrayList<ResolveInfo> l = new ArrayList<ResolveInfo>();
 	    	
-	    	ri = new ResolveInfo();
-	    	ai = new ActivityInfo();
-	    	ai.name = "com.android.browser.Browser";
-	    	ri.activityInfo = ai;
-	    	l.add(ri);
-
-	    	ri = new ResolveInfo();
-	    	ai = new ActivityInfo();
-	    	ai.name = "org.mozilla.firefox";
-	    	ri.activityInfo = ai;
-	    	l.add(ri);
+	    	l.add(makeInfo("Browser", "com.android.browser", "com.android.browser.BrowserActivity"));
+	    	l.add(makeInfo("URLHelper", "org.nosreme.app.urlhelper", "org.nosreme.app.urlhelper.URLHelper"));
+	    	l.add(makeInfo("Firefox", "org.mozilla.fennec", "org.mozilla.fennec.Firefox"));
 
 	    	return l;
 	    }		
@@ -145,10 +145,13 @@ public class ActionChooserIsolatedTest extends
 	}
 	
 	public void testSimple() {
-		Context context = this.getInstrumentation().getTargetContext().getApplicationContext();
-		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com/"), context, ActionChooser.class);
+		Context context = new FakeContext(this.getInstrumentation().getTargetContext(),
+				(Application)this.getInstrumentation().getTargetContext().getApplicationContext());
+		final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com/"), context, ActionChooser.class);
 
-	    ActionChooser activity = startActivity(intent, null, null);
+		setActivityContext(context);
+
+		ActionChooser activity = startActivity(intent, null, null);
 	    
 	    final Button okButton = (Button)activity.findViewById(org.nosreme.app.urlhelper.R.id.choose_open);
 	    
@@ -163,6 +166,7 @@ public class ActionChooserIsolatedTest extends
 		
 		ActivityResult result = getResult(activity);
 		assertEquals(result.code, Activity.RESULT_OK);	  
+		assertEquals(result.data.getComponent().flattenToString(), "com.android.browser/com.android.browser.BrowserActivity");
 	}
 
 	public void testVisible() throws Throwable {
@@ -217,7 +221,7 @@ public class ActionChooserIsolatedTest extends
 	    /* Now check that the "Open with..." spinner is enabled at the right
 	     * times. */
 	    final Spinner spinner = (Spinner)activity.findViewById(org.nosreme.app.urlhelper.R.id.spinner_openwith);
-	    RadioButton openRad = (RadioButton)activity.findViewById(org.nosreme.app.urlhelper.R.id.radio_openwith);
+	    final RadioButton openRad = (RadioButton)activity.findViewById(org.nosreme.app.urlhelper.R.id.radio_openwith);
 	    final RadioButton expandRad = (RadioButton)activity.findViewById(org.nosreme.app.urlhelper.R.id.radio_expand);
 	    assertNotNull(openRad);
 	    assertNotNull(spinner);
@@ -240,6 +244,29 @@ public class ActionChooserIsolatedTest extends
 	    
 	    /* Now check that the spinner has suitable entries */
 	    assertEquals(2, spinner.getCount());	    
+
+	    /* Go back to Open With. */
+	    activity.runOnUiThread(new Runnable() {
+			public void run() {
+				openRad.performClick();
+			}
+		});
+   		getInstrumentation().waitForIdleSync();
+
+   		/* Attempt to select the second option */
+   		spinner.setSelection(1);
+	    final Button okButton = (Button)activity.findViewById(org.nosreme.app.urlhelper.R.id.choose_open);
+	    
+		activity.runOnUiThread(new Runnable() {
+			public void run() {
+				okButton.performClick();
+			}
+		});
+		getInstrumentation().waitForIdleSync();
+
+		ActivityResult result = getResult(activity);
+		assertEquals(result.code, Activity.RESULT_OK);
+		assertEquals(result.data.getComponent().flattenToString(), "org.mozilla.fennec/org.mozilla.fennec.Firefox");
 	}
 
 	public void testCancel() {

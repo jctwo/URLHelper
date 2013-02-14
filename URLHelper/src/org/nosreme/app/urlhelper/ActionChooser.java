@@ -87,8 +87,19 @@ public class ActionChooser extends Activity
 	/* Called when the "OK" button is pressed */
 	public void buttonOk(View v)
 	{
-		Intent intent = new Intent();
-		setResult(RESULT_OK, intent);
+		Intent intent;
+		RadioButton rb = (RadioButton)findViewById(R.id.radio_openwith);
+		
+		if (rb.isChecked())
+		{
+			/* Return the right intent */
+			Spinner activitySpinner = (Spinner)findViewById(R.id.spinner_openwith);
+			setResult(RESULT_OK, (Intent)activitySpinner.getSelectedItem());
+		}
+		else
+		{
+			setResult(RESULT_CANCELED, null);
+		}
 		finish();
 	}
 	/* Called when one of the action radio buttons is clicked. */
