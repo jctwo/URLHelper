@@ -10,7 +10,7 @@ import android.util.Log;
 public class IntentResolverTest extends AndroidTestCase {
 
 	public void testResolver() {
-		IntentResolver resolver = new IntentResolver(getContext().getPackageManager(), "http://www.example.org/");
+		IntentResolver resolver = new IntentResolver(new FakePackageManager(), "http://www.example.org/");
 		
 		assertNotNull(resolver);
 		
