@@ -537,6 +537,10 @@ public class URLHelperActivity extends ListActivity {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		//launchItem(id);
 		Intent intent = new Intent(this, ActionChooser.class);
+		UrlStore urlstore = new UrlStore(getApplicationContext());
+
+		String urlString = urlstore.getUrl(id);
+		intent.setData(Uri.parse(urlString));
 		startActivityForResult(intent, REQ_CHOOSE_ACTION);
 	}
 

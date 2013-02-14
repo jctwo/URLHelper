@@ -6,17 +6,41 @@ import org.nosreme.app.urlhelper.ActionChooser;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.mock.MockPackageManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
+import android.widget.Spinner;
 
 public class ActionChooserTest extends
 		ActivityInstrumentationTestCase2<ActionChooser> {
+	
+	/* Fake package manager to fill in the results we want. */
+	class FakePackageManager extends MockPackageManager {
+	    FakePackageManager() {
+	    	super();
+	    }
+	}
+	
+	/* Context wrapper returning a FakePackageManager */
+	class FakePackageContext extends ContextWrapper {
+	    public FakePackageContext(Context context)
+	    {
+	    	super(context);
+	    }
+	    
+	    public PackageManager getPackageManager()
+	    {
+	    	return new FakePackageManager();
+	    }
+	}
 	
 	/* Simple class for returning the full result from an activity. */
 	public class ActivityResult {
@@ -136,7 +160,7 @@ public class ActionChooserTest extends
 	    
 	    /* Now check that the "Open with..." spinner is enabled at the right
 	     * times. */
-	    View spinner = (View)activity.findViewById(org.nosreme.app.urlhelper.R.id.spinner_openwith);
+	    final Spinner spinner = (Spinner)activity.findViewById(org.nosreme.app.urlhelper.R.id.spinner_openwith);
 	    RadioButton openRad = (RadioButton)activity.findViewById(org.nosreme.app.urlhelper.R.id.radio_openwith);
 	    final RadioButton expandRad = (RadioButton)activity.findViewById(org.nosreme.app.urlhelper.R.id.radio_expand);
 	    assertNotNull(openRad);
@@ -157,7 +181,10 @@ public class ActionChooserTest extends
    		
    		assertFalse(openRad.isChecked());
 	    assertTrue(expandRad.isChecked());
-	    assertFalse(spinner.isEnabled());	    
+	    assertFalse(spinner.isEnabled());
+	    
+	    /* Now check that the spinner has suitable entries */
+	    assertTrue(spinner.getCount() >= 1);	    
 	}
 
 	public void testCancel() {

@@ -1,21 +1,70 @@
 package org.nosreme.app.urlhelper;
 import android.app.*;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.*;
+import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.Spinner;
-
+import android.widget.TextView;
 
 public class ActionChooser extends Activity
 {
+	private class ActivityAdapter extends BaseAdapter {
+		private Activity mActivity;
+		private IntentResolver mResolver;
+		private Context mContext;
+		public ActivityAdapter(Activity activity, IntentResolver resolver)
+		{
+			mActivity = activity;
+			mContext = activity.getApplicationContext();
+			mResolver = resolver;
+		}
+
+		public int getCount() {
+			return mResolver.count();
+		}
+
+		public Object getItem(int position) {
+			return mResolver.getIntent(position);
+		}
+
+		public long getItemId(int position) {
+			return position;
+		}
+
+		public View getView(int position, View convertView, ViewGroup parent) {
+			if (convertView != null) {
+				/* Our list never changes, so can always reuse views. */
+				return convertView;
+			}
+			
+			/* Otherwise, we need to create one. */
+			LayoutInflater inflater = mActivity.getLayoutInflater();
+			View v = inflater.inflate(R.layout.act_spinner, null);
+			
+			TextView tv = (TextView)v.findViewById(R.id.act_label);
+			tv.setText(mResolver.getHumanName(position));
+			return v;
+		}
+		
+	}
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		Intent intent = getIntent();
 
 		setContentView(R.layout.action_chooser);
+		Spinner spinner = (Spinner)findViewById(R.id.spinner_openwith);
+		Context context = getApplicationContext();
+		IntentResolver resolver = new IntentResolver(context.getPackageManager(),
+				                                     intent.getDataString());
+		ActivityAdapter adapter = new ActivityAdapter(this, resolver);
+		spinner.setAdapter(adapter);
 		
 		/* Set various visibilities */
 		updateVisibleWidgets();
