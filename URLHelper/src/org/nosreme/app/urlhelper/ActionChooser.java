@@ -60,8 +60,7 @@ public class ActionChooser extends Activity
 
 		setContentView(R.layout.action_chooser);
 		Spinner spinner = (Spinner)findViewById(R.id.spinner_openwith);
-		Context context = getApplicationContext();
-		IntentResolver resolver = new IntentResolver(context.getPackageManager(),
+		IntentResolver resolver = new IntentResolver(getPackageManager(),
 				                                     intent.getDataString());
 		ActivityAdapter adapter = new ActivityAdapter(this, resolver);
 		spinner.setAdapter(adapter);

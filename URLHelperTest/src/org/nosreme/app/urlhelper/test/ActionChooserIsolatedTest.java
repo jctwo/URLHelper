@@ -1,17 +1,23 @@
 package org.nosreme.app.urlhelper.test;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.nosreme.app.urlhelper.ActionChooser;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.ActivityUnitTestCase;
+import android.test.mock.MockApplication;
 import android.test.mock.MockPackageManager;
 import android.view.KeyEvent;
 import android.view.View;
@@ -22,6 +28,73 @@ import android.widget.Spinner;
 
 public class ActionChooserIsolatedTest extends
 		ActivityUnitTestCase<ActionChooser> {
+	
+	/* Fake package manager with known contents */
+	public class FakePackageManager extends MockPackageManager {
+	    @Override
+	    public List<ResolveInfo> queryIntentActivities(Intent intent, int flags) {
+	    	ArrayList<ResolveInfo> l = new ArrayList<ResolveInfo>();
+	    	
+	    	ResolveInfo ri;
+	    	ActivityInfo ai;
+
+	    	ri = new ResolveInfo();
+	    	ai = new ActivityInfo();
+	    	ai.name = "org.nosreme.app.urlhelper.URLHelper";
+	    	ri.activityInfo = ai;
+	    	l.add(ri);
+	    	
+	    	ri = new ResolveInfo();
+	    	ai = new ActivityInfo();
+	    	ai.name = "com.android.browser.Browser";
+	    	ri.activityInfo = ai;
+	    	l.add(ri);
+
+	    	ri = new ResolveInfo();
+	    	ai = new ActivityInfo();
+	    	ai.name = "org.mozilla.firefox";
+	    	ri.activityInfo = ai;
+	    	l.add(ri);
+
+	    	return l;
+	    }		
+	}
+	/* Wrapper so we an supply our own context */
+	public class FakeContext extends ContextWrapper {
+		private Application mApp;
+		
+		public FakeContext(Context context, Application app) {
+			super(context);
+			mApp = app;
+		}
+		
+		/* Provide a fake package manager instance */
+		@Override
+		public PackageManager getPackageManager() {
+			return new FakePackageManager();
+		}
+		
+		@Override
+	    public Context getApplicationContext() {
+			return mApp;
+		}
+		
+
+	}
+	
+	/* Wrapper so we an supply our own context */
+//	public class FakeApplication extends MockApplication {
+//		public FakeApplication() {
+//			super();
+//			
+//		}
+//		
+//		/* Provide a fake package manager instance */
+//		@Override
+//		public PackageManager getPackageManager() {
+//			return new FakePackageManager();
+//		}
+//	}
 	
 	/* Simple class for returning the full result from an activity. */
 	public class ActivityResult {
@@ -93,8 +166,13 @@ public class ActionChooserIsolatedTest extends
 	}
 
 	public void testVisible() throws Throwable {
-		Context context = this.getInstrumentation().getTargetContext().getApplicationContext();
+		//Application app = new FakeApplication();
+		Context context = new FakeContext(this.getInstrumentation().getTargetContext(),
+				                          (Application)this.getInstrumentation().getTargetContext().getApplicationContext());
 		final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com/"), context, ActionChooser.class);
+
+		setActivityContext(context);
+		//setApplication(app);
 		
 		runTestOnUiThread(new Runnable() {
 		        public void run() {
@@ -161,7 +239,7 @@ public class ActionChooserIsolatedTest extends
 	    assertFalse(spinner.isEnabled());
 	    
 	    /* Now check that the spinner has suitable entries */
-	    assertTrue(spinner.getCount() == 2);	    
+	    assertEquals(2, spinner.getCount());	    
 	}
 
 	public void testCancel() {
