@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.ActivityUnitTestCase;
 import android.test.mock.MockPackageManager;
 import android.view.KeyEvent;
 import android.view.View;
@@ -19,8 +20,8 @@ import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 
-public class ActionChooserTest extends
-		ActivityInstrumentationTestCase2<ActionChooser> {
+public class ActionChooserIsolatedTest extends
+		ActivityUnitTestCase<ActionChooser> {
 	
 	/* Simple class for returning the full result from an activity. */
 	public class ActivityResult {
@@ -32,15 +33,13 @@ public class ActionChooserTest extends
 		}
 	}
 	
-	public ActionChooserTest() {
-		super("org.nosreme.app.urlhelper", ActionChooser.class);
+	public ActionChooserIsolatedTest() {
+		super(ActionChooser.class);
 	}
 	
 	@Override
 	protected void setUp() throws Exception {
 	    super.setUp();
-
-	    setActivityInitialTouchMode(false);
 
 	}
 
@@ -75,10 +74,8 @@ public class ActionChooserTest extends
 	public void testSimple() {
 		Context context = this.getInstrumentation().getTargetContext().getApplicationContext();
 		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com/"), context, ActionChooser.class);
-		
-	    setActivityIntent(intent);
-	    
-	    ActionChooser activity = getActivity();
+
+	    ActionChooser activity = startActivity(intent, null, null);
 	    
 	    final Button okButton = (Button)activity.findViewById(org.nosreme.app.urlhelper.R.id.choose_open);
 	    
@@ -95,13 +92,16 @@ public class ActionChooserTest extends
 		assertEquals(result.code, Activity.RESULT_OK);	  
 	}
 
-	public void testVisible() {
+	public void testVisible() throws Throwable {
 		Context context = this.getInstrumentation().getTargetContext().getApplicationContext();
-		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com/"), context, ActionChooser.class);
+		final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com/"), context, ActionChooser.class);
 		
-	    setActivityIntent(intent);
-	    
-	    ActionChooser activity = getActivity();
+		runTestOnUiThread(new Runnable() {
+		        public void run() {
+		            startActivity(intent, null, null);
+		        }
+		});
+	    ActionChooser activity = getActivity(); //startActivity(intent, null, null);
 	    
 	    final CheckBox ruleCb = (CheckBox)activity.findViewById(org.nosreme.app.urlhelper.R.id.check_addrule);
 	    View regex_label = activity.findViewById(org.nosreme.app.urlhelper.R.id.title_ruleregex);
@@ -114,11 +114,10 @@ public class ActionChooserTest extends
 	    
 		activity.runOnUiThread(new Runnable() {
 			public void run() {
-				ruleCb.requestFocus();
+				ruleCb.performClick();
 			}
 		});
    		getInstrumentation().waitForIdleSync();
-   		sendKeys(KeyEvent.KEYCODE_DPAD_CENTER);
    		
    		/* They should now be visible */
 	    assertTrue(ruleCb.isChecked());
@@ -127,11 +126,10 @@ public class ActionChooserTest extends
 
 	    activity.runOnUiThread(new Runnable() {
 			public void run() {
-				ruleCb.requestFocus();
+				ruleCb.performClick();
 			}
 		});
    		getInstrumentation().waitForIdleSync();
-   		sendKeys(KeyEvent.KEYCODE_DPAD_CENTER);
 
    		/* And invisible again */
 	    assertFalse(ruleCb.isChecked());
@@ -153,27 +151,24 @@ public class ActionChooserTest extends
 	    /* Select another radio button, and check the spinner is disabled. */
 	    activity.runOnUiThread(new Runnable() {
 			public void run() {
-				expandRad.requestFocus();
+				expandRad.performClick();
 			}
 		});
    		getInstrumentation().waitForIdleSync();
-   		sendKeys(KeyEvent.KEYCODE_DPAD_CENTER);
    		
    		assertFalse(openRad.isChecked());
 	    assertTrue(expandRad.isChecked());
 	    assertFalse(spinner.isEnabled());
 	    
 	    /* Now check that the spinner has suitable entries */
-	    assertTrue(spinner.getCount() >= 1);	    
+	    assertTrue(spinner.getCount() == 2);	    
 	}
 
 	public void testCancel() {
 		Context context = this.getInstrumentation().getTargetContext().getApplicationContext();
 		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com/"), context, ActionChooser.class);
 		
-	    setActivityIntent(intent);
-
-	    ActionChooser activity = getActivity();
+	    ActionChooser activity = startActivity(intent, null, null);
 	    getInstrumentation().waitForIdleSync();
 
 	    sendKeys(KeyEvent.KEYCODE_BACK);
