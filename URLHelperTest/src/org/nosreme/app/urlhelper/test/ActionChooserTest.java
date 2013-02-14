@@ -22,26 +22,6 @@ import android.widget.Spinner;
 public class ActionChooserTest extends
 		ActivityInstrumentationTestCase2<ActionChooser> {
 	
-	/* Fake package manager to fill in the results we want. */
-	class FakePackageManager extends MockPackageManager {
-	    FakePackageManager() {
-	    	super();
-	    }
-	}
-	
-	/* Context wrapper returning a FakePackageManager */
-	class FakePackageContext extends ContextWrapper {
-	    public FakePackageContext(Context context)
-	    {
-	    	super(context);
-	    }
-	    
-	    public PackageManager getPackageManager()
-	    {
-	    	return new FakePackageManager();
-	    }
-	}
-	
 	/* Simple class for returning the full result from an activity. */
 	public class ActivityResult {
 		public int code;
