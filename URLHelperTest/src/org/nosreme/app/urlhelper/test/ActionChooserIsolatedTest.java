@@ -125,7 +125,40 @@ public class ActionChooserIsolatedTest extends
 	       
 		assertEquals(result.data.getComponent().flattenToString(), "com.android.browser/com.android.browser.BrowserActivity");
 	}
+	
+    public void testExpand() {
+	Context context = new FakeContext(this.getInstrumentation().getTargetContext(),
+					  (Application)this.getInstrumentation().getTargetContext().getApplicationContext());
+	final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com/"), context, ActionChooser.class);
 
+	setActivityContext(context);
+
+	ActionChooser activity = startActivity(intent, null, null);
+
+	final Button okButton = (Button)activity.findViewById(org.nosreme.app.urlhelper.R.id.choose_open);
+	final RadioButton expandRad = (RadioButton)activity.findViewById(org.nosreme.app.urlhelper.R.id.radio_expand);
+	
+	doClick(activity, expandRad);
+	doClick(activity, okButton);
+
+	ActivityResult result = getResult(activity);
+	assertEquals(result.code, ActionChooser.RESULT_EXPAND);	  
+
+    }
+
+    private void doClick(ActionChooser activity, Button but)
+    {
+	final Button theBut = but;
+	activity.runOnUiThread(new Runnable() {
+		public void run()
+		{
+		    theBut.performClick();
+		}
+	    });
+	getInstrumentation().waitForIdleSync();
+    }
+
+    
 	public void testVisible() throws Throwable {
 		//Application app = new FakeApplication();
 		Context context = new FakeContext(this.getInstrumentation().getTargetContext(),

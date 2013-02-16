@@ -16,6 +16,8 @@ public class ActionChooser extends Activity
     public static final String INTENT_RESULT = "org.nosreme.intent.result";
 
     public static final int RESULT_OPEN = RESULT_FIRST_USER;
+
+    public static final int RESULT_EXPAND = RESULT_OPEN + 1;
 	private class ActivityAdapter extends BaseAdapter {
 		private Activity mActivity;
 		private IntentResolver mResolver;
@@ -92,13 +94,18 @@ public class ActionChooser extends Activity
 	public void buttonOk(View v)
 	{
 		Intent intent;
-		RadioButton rb = (RadioButton)findViewById(R.id.radio_openwith);
-		
-		if (rb.isChecked())
+		RadioButton rbOpen = (RadioButton)findViewById(R.id.radio_openwith);
+	        RadioButton rbExpand = (RadioButton)findViewById(R.id.radio_expand);
+
+		if (rbOpen.isChecked())
 		{
 			/* Return the right intent */
 			Spinner activitySpinner = (Spinner)findViewById(R.id.spinner_openwith);
 			setResult(RESULT_OPEN, (Intent)activitySpinner.getSelectedItem());
+		}
+		else if (rbExpand.isChecked())
+		{
+		        setResult(RESULT_EXPAND, null);
 		}
 		else
 		{
