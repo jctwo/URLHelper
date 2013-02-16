@@ -92,7 +92,7 @@ public class ActionChooserUiTest extends
 		getInstrumentation().waitForIdleSync();
 		
 		ActivityResult result = getResult(activity);
-		assertEquals(result.code, Activity.RESULT_OK);	  
+		assertEquals(result.code, ActionChooser.RESULT_OPEN);	  
 	}
 
 	public void testVisible() {

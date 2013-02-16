@@ -52,20 +52,6 @@ public class ActionChooserIsolatedTest extends
 
 	}
 	
-	/* Wrapper so we an supply our own context */
-//	public class FakeApplication extends MockApplication {
-//		public FakeApplication() {
-//			super();
-//			
-//		}
-//		
-//		/* Provide a fake package manager instance */
-//		@Override
-//		public PackageManager getPackageManager() {
-//			return new FakePackageManager();
-//		}
-//	}
-	
 	/* Simple class for returning the full result from an activity. */
 	public class ActivityResult {
 		public int code;
@@ -135,7 +121,8 @@ public class ActionChooserIsolatedTest extends
 		getInstrumentation().waitForIdleSync();
 		
 		ActivityResult result = getResult(activity);
-		assertEquals(result.code, Activity.RESULT_OK);	  
+		assertEquals(result.code, ActionChooser.RESULT_OPEN);	  
+	       
 		assertEquals(result.data.getComponent().flattenToString(), "com.android.browser/com.android.browser.BrowserActivity");
 	}
 
@@ -235,7 +222,7 @@ public class ActionChooserIsolatedTest extends
 		getInstrumentation().waitForIdleSync();
 
 		ActivityResult result = getResult(activity);
-		assertEquals(result.code, Activity.RESULT_OK);
+		assertEquals(result.code, ActionChooser.RESULT_OPEN);
 		assertEquals(result.data.getComponent().flattenToString(), "org.mozilla.fennec/org.mozilla.fennec.Firefox");
 	}
 

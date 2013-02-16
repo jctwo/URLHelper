@@ -12,6 +12,10 @@ import android.widget.TextView;
 
 public class ActionChooser extends Activity
 {
+
+    public static final String INTENT_RESULT = "org.nosreme.intent.result";
+
+    public static final int RESULT_OPEN = RESULT_FIRST_USER;
 	private class ActivityAdapter extends BaseAdapter {
 		private Activity mActivity;
 		private IntentResolver mResolver;
@@ -94,7 +98,7 @@ public class ActionChooser extends Activity
 		{
 			/* Return the right intent */
 			Spinner activitySpinner = (Spinner)findViewById(R.id.spinner_openwith);
-			setResult(RESULT_OK, (Intent)activitySpinner.getSelectedItem());
+			setResult(RESULT_OPEN, (Intent)activitySpinner.getSelectedItem());
 		}
 		else
 		{
