@@ -4,6 +4,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <TextView
+        android:id="@+id/text_url"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="url to open"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+	
     <RadioGroup
         android:id="@+id/radioGroup1"
         android:layout_width="wrap_content"

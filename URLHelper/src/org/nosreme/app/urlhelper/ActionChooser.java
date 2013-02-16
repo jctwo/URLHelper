@@ -63,13 +63,17 @@ public class ActionChooser extends Activity
 		super.onCreate(savedInstanceState);
 		
 		Intent intent = getIntent();
+		String urlString = intent.getDataString();
 
 		setContentView(R.layout.action_chooser);
 		Spinner spinner = (Spinner)findViewById(R.id.spinner_openwith);
 		IntentResolver resolver = new IntentResolver(getPackageManager(),
-				                                     intent.getDataString());
+				                                     urlString);
 		ActivityAdapter adapter = new ActivityAdapter(this, resolver);
 		spinner.setAdapter(adapter);
+		
+		TextView tv = (TextView)findViewById(R.id.text_url);
+		tv.setText(urlString);
 		
 		/* Set various visibilities */
 		updateVisibleWidgets();

@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.Spinner;
+import android.widget.*;
 
 public class ActionChooserIsolatedTest extends
 		ActivityUnitTestCase<ActionChooser> {
@@ -108,10 +109,22 @@ public class ActionChooserIsolatedTest extends
 		setActivityContext(context);
 
 		ActionChooser activity = startActivity(intent, null, null);
+	
+	        /* This seems necessary to make sure the UI had updated (eg the TextView)
+		 */
+	    activity.runOnUiThread(new Runnable() {
+		    public void run() {
+			
+		    }
+		});
+		
+	        getInstrumentation().waitForIdleSync();
+		
+		TextView tv = (TextView)activity.findViewById(org.nosreme.app.urlhelper.R.id.text_url);
+	    assertEquals(tv.getText(), "http://www.example.com/");
 	    
 	    final Button okButton = (Button)activity.findViewById(org.nosreme.app.urlhelper.R.id.choose_open);
 	    
-	    //okButton.requestFocus();
 		activity.runOnUiThread(new Runnable() {
 			public void run() {
 				okButton.performClick();
