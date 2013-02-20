@@ -1,8 +1,6 @@
 package org.nosreme.app.urlhelper.test;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.nosreme.app.urlhelper.ActionChooser;
 
@@ -11,21 +9,16 @@ import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.test.ActivityInstrumentationTestCase2;
 import android.test.ActivityUnitTestCase;
-import android.test.mock.MockApplication;
-import android.test.mock.MockPackageManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.Spinner;
-import android.widget.*;
+import android.widget.TextView;
 
 public class ActionChooserIsolatedTest extends
 		ActivityUnitTestCase<ActionChooser> {

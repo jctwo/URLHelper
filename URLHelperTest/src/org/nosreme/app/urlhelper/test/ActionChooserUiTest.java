@@ -6,12 +6,9 @@ import org.nosreme.app.urlhelper.ActionChooser;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.test.ActivityInstrumentationTestCase2;
-import android.test.mock.MockPackageManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;

@@ -97,7 +97,6 @@ public class ActionChooser extends Activity
 	/* Called when the "OK" button is pressed */
 	public void buttonOk(View v)
 	{
-		Intent intent;
 		RadioButton rbOpen = (RadioButton)findViewById(R.id.radio_openwith);
 	        RadioButton rbExpand = (RadioButton)findViewById(R.id.radio_expand);
 
