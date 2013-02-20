@@ -1,6 +1,5 @@
 package org.nosreme.app.urlhelper.test;
 
-import java.lang.reflect.Field;
 
 import org.nosreme.app.urlhelper.ActionChooser;
 
@@ -11,7 +10,6 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.test.ActivityUnitTestCase;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -21,7 +19,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 public class ActionChooserIsolatedTest extends
-		ActivityUnitTestCase<ActionChooser> {
+		IntentHelperTest<ActionChooser> {
 	
 	/* Wrapper so we an supply our own context */
 	public class FakeContext extends ContextWrapper {
@@ -46,16 +44,6 @@ public class ActionChooserIsolatedTest extends
 
 	}
 	
-	/* Simple class for returning the full result from an activity. */
-	public class ActivityResult {
-		public int code;
-		public Intent data;
-		public ActivityResult(int c, Intent d) {
-			code = c;
-			data = d;
-		}
-	}
-	
 	public ActionChooserIsolatedTest() {
 		super(ActionChooser.class);
 	}
@@ -70,30 +58,6 @@ public class ActionChooserIsolatedTest extends
 	    /* Nothing yet to test */
 	}
 
-	protected ActivityResult getResult(Activity activity)
-	{
-		/* Thanks to 
-		 * http://stackoverflow.com/questions/5569830/get-result-from-an-activity-after-finish-in-an-android-unit-test
-		 * for this way of finding the activity result.  There *must* be a
-		 * better way... */
-		try {
-			Field f = Activity.class.getDeclaredField("mResultCode");
-			f.setAccessible(true);
-			int actualResultCode = (Integer)f.get(activity);
-			f = Activity.class.getDeclaredField("mResultData");
-			f.setAccessible(true);
-			Intent realResult = (Intent)f.get(activity);
-			return new ActivityResult(actualResultCode, realResult);
-		} catch (NoSuchFieldException e) {
-			assert false;
-			return null;
-		} catch (Exception e) {
-			assert false;
-			return null;
-		}
-		
-	}
-	
 	public void testSimple() {
 		Context context = new FakeContext(this.getInstrumentation().getTargetContext(),
 				(Application)this.getInstrumentation().getTargetContext().getApplicationContext());
