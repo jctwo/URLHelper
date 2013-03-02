@@ -25,7 +25,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class URLOpenActivity extends ListActivity {
-	private final int REQ_CHOOSE_INTENT = 0;
+	private final int REQ_CHOOSE_ACTION = 0;
 
 	private String intentOptionsStr = null;
 
@@ -142,7 +142,7 @@ public class URLOpenActivity extends ListActivity {
     		 */
     		intentOptionsStr = combinedActivityList;
     		Log.v("handler", "starting chooser.  saved str:" + intentOptionsStr);
-    		startActivityForResult(chooserIntent, REQ_CHOOSE_INTENT);    		
+    		//startActivityForResult(chooserIntent, REQ_CHOOSE_INTENT);    		
     	} else {
     		/* Only one, so use it directly. */
     	    intent.setClassName(pkg, name);
@@ -216,23 +216,11 @@ public class URLOpenActivity extends ListActivity {
 
 			Toast t2 = Toast.makeText(getApplicationContext(), "URLHelper: URL saved.", Toast.LENGTH_SHORT);
 			t2.show();
+			finish();
 		} else {		/* If online, simply relaunch it. */
-	        boolean expand = prefs.getBoolean("expandOnLaunch", false);
-	        String url = intent.getDataString();
-
-	        if (expand)
-	        {
-			    String expanded = expandUrl(url, true);
-			    if (expanded != null)
-			    {
-			        url = expanded;
-			    }
-	        }
-			launchUrl(url);
-			/* And exit - nothing else to do once we've launched the URL again. */
+			intent.setClass(getApplicationContext(), ActionChooser.class);
+			startActivityForResult(intent, REQ_CHOOSE_ACTION);
 		}
-		finish();
-
 	}
 	
 	/* Check whether we're online or not. */
@@ -273,28 +261,20 @@ public class URLOpenActivity extends ListActivity {
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.v("handler", "in onActivityResult");
-		if (requestCode == REQ_CHOOSE_INTENT) {
+		if (requestCode == REQ_CHOOSE_ACTION) {
 			Log.i("URLHandler", "Got activity result");
 			Log.v("handler", "got result, saved str=" + intentOptionsStr);
 			Log.v("handler", "got resultCode" + resultCode);
-			if (resultCode == RESULT_OK) {
-				/*
-				 * Save the handler preference. TODO: Need option to not make it
-				 * default!
-				 */
-				if (intentOptionsStr != null) {
-					Log.v("handler", "saved string=" + intentOptionsStr);
-					UrlStore urlstore = new UrlStore(getApplicationContext());
-					ComponentName comp = data.getComponent();
-					urlstore.setHandlerSet(intentOptionsStr,
-							comp.getPackageName(), comp.getClassName());
-					Log.v("handler", "saving as " + comp.getPackageName() + "/"
-							+ comp.getClassName());
-				}
-
-				startActivity(data);
+			switch (resultCode)
+			{
+			case ActionChooser.RESULT_OPEN:
+			    {
+			    	/* If we've been asked to open, then do so. */
+			    	startActivity(data);
+			    	finish();
+			    	break;
+			    }
 			}
-			intentOptionsStr = null;
 		}
 	}
 }
