@@ -116,6 +116,11 @@ public class URLOpenActivity extends ListActivity {
     	    	Log.v("handler", "Nothing found");
     	    }
     	}
+    	else
+    	{
+    		/* There's only one, so we're ok. */
+    		chosen = true;
+    	}
     	
     	/* If there's no single choice, then ask the user. */
     	if (!chosen)
@@ -273,6 +278,14 @@ public class URLOpenActivity extends ListActivity {
 			    	startActivity(data);
 			    	finish();
 			    	break;
+			    }
+			case ActionChooser.RESULT_EXPAND:
+			    {
+				    String url = data.getDataString();
+				    String expanded = expandUrl(url, true);
+				    
+				    launchUrl(expanded);
+				    break;
 			    }
 			}
 		}
