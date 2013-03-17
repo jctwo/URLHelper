@@ -13,11 +13,16 @@ import android.widget.TextView;
 public class ActionChooser extends Activity
 {
 
-    public static final String INTENT_RESULT = "org.nosreme.intent.result";
+    //public static final String INTENT_RESULT = "org.nosreme.intent.result";
 
     public static final int RESULT_OPEN = RESULT_FIRST_USER;
 
     public static final int RESULT_EXPAND = RESULT_OPEN + 1;
+    
+    /* Extra intent field for "add rule" flag */
+    public static final String EXTRA_INTENT = "_ac_intent";
+    public static final String EXTRA_ADDRULE = "_ac_addrule";
+    public static final String EXTRA_REGEX = "_ac_regex";
 	private class ActivityAdapter extends BaseAdapter {
 		private Activity mActivity;
 		private IntentResolver mResolver;
@@ -98,22 +103,37 @@ public class ActionChooser extends Activity
 	public void buttonOk(View v)
 	{
 		RadioButton rbOpen = (RadioButton)findViewById(R.id.radio_openwith);
-	        RadioButton rbExpand = (RadioButton)findViewById(R.id.radio_expand);
+		RadioButton rbExpand = (RadioButton)findViewById(R.id.radio_expand);
+		CheckBox cbAddRule = (CheckBox)findViewById(R.id.check_addrule);
+		TextView tvRegex = (TextView)findViewById(R.id.multi_ruleregex);
 
+		Intent resultIntent = new Intent();
+		int result;
+		
 		if (rbOpen.isChecked())
 		{
 			/* Return the right intent */
 			Spinner activitySpinner = (Spinner)findViewById(R.id.spinner_openwith);
-			setResult(RESULT_OPEN, (Intent)activitySpinner.getSelectedItem());
+			result = RESULT_OPEN;
+			resultIntent.putExtra(EXTRA_INTENT,
+					              (Intent)activitySpinner.getSelectedItem());
 		}
 		else if (rbExpand.isChecked())
 		{
-		        setResult(RESULT_EXPAND, null);
+			result = RESULT_EXPAND;
 		}
 		else
 		{
-			setResult(RESULT_CANCELED, null);
+			result = RESULT_CANCELED;
 		}
+		
+		if (cbAddRule.isChecked())
+		{
+			resultIntent.putExtra(EXTRA_ADDRULE, true);
+			resultIntent.putExtra(EXTRA_REGEX, tvRegex.getText());
+		}
+		
+		setResult(result, resultIntent);
 		finish();
 	}
 	/* Called when one of the action radio buttons is clicked. */

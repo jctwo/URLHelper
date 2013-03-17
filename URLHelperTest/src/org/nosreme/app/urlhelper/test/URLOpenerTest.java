@@ -43,6 +43,8 @@ public class URLOpenerTest extends IntentHelperTest<URLOpenActivity>
 
 		Intent fakeResultIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com/"));
 		fakeResultIntent.setClassName("org.example.apps", "exampleClass");
+		Intent wrappedResultIntent = new Intent();
+		wrappedResultIntent.putExtra(ActionChooser.EXTRA_INTENT, fakeResultIntent);
 
 		startActivity(intent, null, null);
 		
@@ -71,7 +73,7 @@ public class URLOpenerTest extends IntentHelperTest<URLOpenActivity>
         try {
           method = activity.getClass().getDeclaredMethod("onActivityResult", int.class, int.class, Intent.class);
           method.setAccessible(true);
-      	  method.invoke(activity, requestId, ActionChooser.RESULT_OPEN, fakeResultIntent);
+      	  method.invoke(activity, requestId, ActionChooser.RESULT_OPEN, wrappedResultIntent);
         } catch (SecurityException e) {
         	fail("Security exception");
         } catch (NoSuchMethodException e) {

@@ -91,9 +91,12 @@ public class ActionChooserIsolatedTest extends
 		getInstrumentation().waitForIdleSync();
 		
 		ActivityResult result = getResult(activity);
-		assertEquals(result.code, ActionChooser.RESULT_OPEN);	  
+		assertEquals(result.code, ActionChooser.RESULT_OPEN);
+		
+		Intent resultIntent = (Intent)result.data.getParcelableExtra(ActionChooser.EXTRA_INTENT);
 	       
-		assertEquals(result.data.getComponent().flattenToString(), "com.android.browser/com.android.browser.BrowserActivity");
+		assertEquals(resultIntent.getComponent().flattenToString(), "com.android.browser/com.android.browser.BrowserActivity");
+		assertEquals(result.data.getBooleanExtra(ActionChooser.EXTRA_ADDRULE, false), false);
 	}
 	
     public void testExpand() {
@@ -226,7 +229,8 @@ public class ActionChooserIsolatedTest extends
 
 		ActivityResult result = getResult(activity);
 		assertEquals(result.code, ActionChooser.RESULT_OPEN);
-		assertEquals(result.data.getComponent().flattenToString(), "org.mozilla.fennec/org.mozilla.fennec.Firefox");
+		Intent resultIntent = (Intent)result.data.getParcelableExtra(ActionChooser.EXTRA_INTENT);
+		assertEquals(resultIntent.getComponent().flattenToString(), "org.mozilla.fennec/org.mozilla.fennec.Firefox");
 	}
 
 	public void testCancel() {
@@ -243,5 +247,49 @@ public class ActionChooserIsolatedTest extends
 		ActivityResult result = getResult(activity);
 		assertEquals(result.code, Activity.RESULT_CANCELED);	  
 
+	}
+	
+	public void testAddRule1()
+	{
+		Context context = new FakeContext(this.getInstrumentation().getTargetContext(),
+				(Application)this.getInstrumentation().getTargetContext().getApplicationContext());
+		final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com/"), context, ActionChooser.class);
+
+		setActivityContext(context);
+
+		ActionChooser activity = startActivity(intent, null, null);
+	
+	        /* This seems necessary to make sure the UI had updated (eg the TextView)
+		 */
+	    activity.runOnUiThread(new Runnable() {
+		    public void run() {
+			
+		    }
+		});
+		
+	        getInstrumentation().waitForIdleSync();
+		
+		TextView tv = (TextView)activity.findViewById(org.nosreme.app.urlhelper.R.id.text_url);
+	    assertEquals(tv.getText(), "http://www.example.com/");
+	    
+	    final Button okButton = (Button)activity.findViewById(org.nosreme.app.urlhelper.R.id.choose_open);
+	    final CheckBox runCheck = (CheckBox)activity.findViewById(org.nosreme.app.urlhelper.R.id.check_addrule);
+	    
+		activity.runOnUiThread(new Runnable() {
+			public void run() {
+				runCheck.setChecked(true);
+				okButton.performClick();
+			}
+		});
+	    
+		getInstrumentation().waitForIdleSync();
+		
+		ActivityResult result = getResult(activity);
+		assertEquals(result.code, ActionChooser.RESULT_OPEN);
+		Intent resultIntent = (Intent)result.data.getParcelableExtra(ActionChooser.EXTRA_INTENT);		
+		assertEquals(result.data.getBooleanExtra(ActionChooser.EXTRA_ADDRULE, false), true);
+		// TODO: check that the regex is ok.
+		
+		assertEquals(resultIntent.getComponent().flattenToString(), "com.android.browser/com.android.browser.BrowserActivity");		
 	}
 }

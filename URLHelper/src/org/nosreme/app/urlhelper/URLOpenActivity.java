@@ -275,7 +275,7 @@ public class URLOpenActivity extends ListActivity {
 			case ActionChooser.RESULT_OPEN:
 			    {
 			    	/* If we've been asked to open, then do so. */
-			    	startActivity(data);
+			    	startActivity((Intent)data.getParcelableExtra(ActionChooser.EXTRA_INTENT));
 			    	finish();
 			    	break;
 			    }
