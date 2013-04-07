@@ -18,6 +18,7 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -28,7 +29,9 @@ public class URLOpenActivity extends ListActivity {
 	private final int REQ_CHOOSE_ACTION = 0;
 
 	private String intentOptionsStr = null;
-
+	
+	private Intent origIntent = null;
+	
 	/* Launch an item, expanding if configured and necessary. */
 	/* Launch a URL using the configured browser. */
 	private void launchUrl(String urlString)
@@ -147,7 +150,11 @@ public class URLOpenActivity extends ListActivity {
     		 */
     		intentOptionsStr = combinedActivityList;
     		Log.v("handler", "starting chooser.  saved str:" + intentOptionsStr);
-    		//startActivityForResult(chooserIntent, REQ_CHOOSE_INTENT);    		
+    		//startActivityForResult(chooserIntent, REQ_CHOOSE_INTENT);
+    		
+    		/* Just launch normally for now */
+    		startActivity(intent);
+    		 
     	} else {
     		/* Only one, so use it directly. */
     	    intent.setClassName(pkg, name);
@@ -226,6 +233,8 @@ public class URLOpenActivity extends ListActivity {
 			intent.setClass(getApplicationContext(), ActionChooser.class);
 			// Clear any flags (such as FORWARD!) that we may not want.
 			intent.setFlags(0);
+			origIntent = (Intent)intent.clone();  // save it for later
+			
 			startActivityForResult(intent, REQ_CHOOSE_ACTION);
 		}
 	}
@@ -265,6 +274,23 @@ public class URLOpenActivity extends ListActivity {
 		}
 		return online;
 	}
+	/*
+	 * Since Android 3, you can't do networking on the main thread (and before
+	 * that, it wasn't that much of a good idea anyway).
+	 * 
+	 * This is the way around it - do the work in the background.
+	 */
+	class ExpandAndOpen extends AsyncTask<String, Void, String> {
+
+        protected String doInBackground(String... urls) {
+        	return expandUrl(urls[0], true);
+        }
+
+        protected void onPostExecute(String expanded) {
+		    launchUrl(expanded);
+		    finish();
+        }
+    }
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.v("handler", "in onActivityResult");
@@ -283,10 +309,12 @@ public class URLOpenActivity extends ListActivity {
 			    }
 			case ActionChooser.RESULT_EXPAND:
 			    {
-				    String url = data.getDataString();
-				    String expanded = expandUrl(url, true);
-				    
-				    launchUrl(expanded);
+			    	/* We should expand the URL, which we've saved before. */
+			    	Log.v("handler", "In RESULT_EXPAND case");
+				    String url = origIntent.getDataString();
+			    	Log.v("handler", "url=" + url);
+			    	/* Expand on a non-UI task */
+			    	new ExpandAndOpen().execute(url);
 				    break;
 			    }
 			}
