@@ -224,6 +224,8 @@ public class URLOpenActivity extends ListActivity {
 			finish();
 		} else {		/* If online, simply relaunch it. */
 			intent.setClass(getApplicationContext(), ActionChooser.class);
+			// Clear any flags (such as FORWARD!) that we may not want.
+			intent.setFlags(0);
 			startActivityForResult(intent, REQ_CHOOSE_ACTION);
 		}
 	}
