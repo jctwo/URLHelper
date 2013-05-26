@@ -541,7 +541,7 @@ public class URLHelperActivity extends ListActivity {
 
 		String urlString = urlstore.getUrl(id);
 		intent.setData(Uri.parse(urlString));
-		startActivityForResult(intent, REQ_CHOOSE_ACTION);
+		startActivity(intent);
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {

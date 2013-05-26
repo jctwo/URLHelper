@@ -207,8 +207,10 @@ public class URLOpenActivity extends ListActivity {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+	        
 		super.onCreate(savedInstanceState);
 
+	    Log.v("urlopen", "On create");
 		/* Check whether we're in offline mode. */
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(getApplicationContext());
@@ -219,6 +221,7 @@ public class URLOpenActivity extends ListActivity {
 		
 		boolean willLaunch = isOnline(prefs);  /* We're online and have a new URL */
 
+	    Log.v("urlopen", "checking willLaunch");
 		if (!willLaunch) {
 			/*
 			 * We're going to save the URL and show the list. TODO: A
@@ -235,7 +238,9 @@ public class URLOpenActivity extends ListActivity {
 			intent.setFlags(0);
 			origIntent = (Intent)intent.clone();  // save it for later
 			
-			startActivityForResult(intent, REQ_CHOOSE_ACTION);
+		    Log.v("urlopen", "starting chooser");
+			startActivity(intent);
+		    Log.v("urlopen", "started");
 		}
 	}
 	

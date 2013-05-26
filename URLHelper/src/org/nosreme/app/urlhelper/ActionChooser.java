@@ -112,11 +112,8 @@ public class ActionChooser extends Activity
 		
 		if (rbOpen.isChecked())
 		{
-			/* Return the right intent */
 			Spinner activitySpinner = (Spinner)findViewById(R.id.spinner_openwith);
-			result = RESULT_OPEN;
-			resultIntent.putExtra(EXTRA_INTENT,
-					              (Intent)activitySpinner.getSelectedItem());
+		    startActivity((Intent)activitySpinner.getSelectedItem());
 		}
 		else if (rbExpand.isChecked())
 		{
@@ -133,7 +130,6 @@ public class ActionChooser extends Activity
 			resultIntent.putExtra(EXTRA_REGEX, tvRegex.getText());
 		}
 		
-		setResult(result, resultIntent);
 		finish();
 	}
 	/* Called when one of the action radio buttons is clicked. */
