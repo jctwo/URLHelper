@@ -51,7 +51,9 @@ do
       end,
     }, urlStoreTab)
 end
-
+function _G.chosenAction(arg)
+  toast("Chose action " .. tostring(arg))
+end
 x = prefs["launchimm"]
 -- toast("Current mode: " .. x)
 
@@ -66,4 +68,5 @@ end
 y = tostring(y)
 prefs["luatest"] = y
 toast(y)
+
 

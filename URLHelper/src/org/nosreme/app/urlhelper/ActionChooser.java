@@ -140,6 +140,8 @@ public class ActionChooser extends Activity
 
 	Intent resultIntent = new Intent();
 	int result;
+	
+	lua.call("chosenAction", rbOpen.isChecked());
 
 	if (rbOpen.isChecked())
 	{
