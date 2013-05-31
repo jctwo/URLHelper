@@ -113,11 +113,16 @@ public class LuaEngine {
 	{
 		return runStreamInt(stream, _G);
 	}
-	public String call(String func, Object val)
+	public String call(String func, Object... vals)
 	{
 	    LuaValue f = fullGlobals.get(func);
+	    LuaValue[] lvs = new LuaValue[vals.length];
+	    for (int i=0; i<vals.length; ++i)
+	    {
+		lvs[i] = CoerceJavaToLua.coerce(vals[i]);
+	    }
 	    
-	    LuaValue result = f.call(CoerceJavaToLua.coerce(val));
+	    Varargs result = f.invoke(LuaValue.varargsOf(lvs));
 	    return result.tojstring();
 	}
 	private LuaValue loadStreamRaw(InputStream stream, LuaValue globals)

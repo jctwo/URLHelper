@@ -6,7 +6,7 @@ do
     local SharedPrefs = PreferenceManager:getDefaultSharedPreferences(ctx)
     
     function _G.toast(msg)
-      t = Toast:makeText(ctx, msg, Toast.LENGTH_LONG)
+      t = Toast:makeText(ctx, msg, Toast.LENGTH_SHORT)
       t:show()
     end
     
@@ -51,14 +51,14 @@ do
       end,
     }, urlStoreTab)
 end
-function _G.chosenAction(arg)
-  toast("Chose action " .. tostring(arg))
+function _G.chosenAction(action, intent, addrule, regex)
+  toast("Chose action " .. tostring(action) .. ","..tostring(intent)..","..tostring(addrule)..","..tostring(regex))
 end
 x = prefs["launchimm"]
 -- toast("Current mode: " .. x)
 
 --toast(store:getUrl(1))
-
+if false then
 y = prefs["luatest"]
 if string.len(y) > 0 then
   y = y + 1
@@ -68,5 +68,5 @@ end
 y = tostring(y)
 prefs["luatest"] = y
 toast(y)
-
+end
 

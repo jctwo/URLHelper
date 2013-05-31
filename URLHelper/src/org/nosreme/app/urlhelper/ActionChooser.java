@@ -99,18 +99,17 @@ public class ActionChooser extends Activity
 
 	    lua = new LuaEngine(ctx);
 
-	    String result;
-
 	    try
 	    {
-		result = lua.runStreamPrivileged(ctx.getResources().getAssets().open("lua/startup.lua"));
+		lua.runStreamPrivileged(ctx.getResources().getAssets().open("lua/startup.lua"));
 	    }
 	    catch (IOException e)
 	    {
-		result = "failed";
+		String result = "failed";
+		Toast t2 = Toast.makeText(ctx, result, Toast.LENGTH_LONG);
+		t2.show();
 	    }				
-	    Toast t2 = Toast.makeText(ctx, result, Toast.LENGTH_LONG);
-	    t2.show();
+
 	}
     }
 
@@ -135,34 +134,50 @@ public class ActionChooser extends Activity
     {
 	RadioButton rbOpen = (RadioButton)findViewById(R.id.radio_openwith);
 	RadioButton rbExpand = (RadioButton)findViewById(R.id.radio_expand);
+	RadioButton rbAdv = (RadioButton)findViewById(R.id.radio_advanced);
 	CheckBox cbAddRule = (CheckBox)findViewById(R.id.check_addrule);
 	TextView tvRegex = (TextView)findViewById(R.id.multi_ruleregex);
 
 	Intent resultIntent = new Intent();
 	int result;
 	
-	lua.call("chosenAction", rbOpen.isChecked());
-
-	if (rbOpen.isChecked())
-	{
-	    Spinner activitySpinner = (Spinner)findViewById(R.id.spinner_openwith);
-	    startActivity((Intent)activitySpinner.getSelectedItem());
+	String action;
+	if (rbOpen.isChecked()) {
+	    action = "open";
+	} else if (rbExpand.isChecked()) {
+	    action = "expand";
+	} else if (rbAdv.isChecked()) {
+	    action = "advanced";
+	} else {
+	    return;
 	}
-	else if (rbExpand.isChecked())
-	{
-	    result = RESULT_EXPAND;
-	}
-	else
-	{
-	    result = RESULT_CANCELED;
-	}
-
-	if (cbAddRule.isChecked())
-	{
-	    resultIntent.putExtra(EXTRA_ADDRULE, true);
-	    resultIntent.putExtra(EXTRA_REGEX, tvRegex.getText());
-	}
-
+	
+        Spinner activitySpinner = (Spinner)findViewById(R.id.spinner_openwith);
+	lua.call("chosenAction", action,
+	         activitySpinner.getSelectedItem(),
+		 cbAddRule.isChecked(), tvRegex.getText());
+	
+//
+//	if (rbOpen.isChecked())
+//	{
+//	    Spinner activitySpinner = (Spinner)findViewById(R.id.spinner_openwith);
+//	    startActivity((Intent)activitySpinner.getSelectedItem());
+//	}
+//	else if (rbExpand.isChecked())
+//	{
+//	    result = RESULT_EXPAND;
+//	}
+//	else
+//	{
+//	    result = RESULT_CANCELED;
+//	}
+//
+//	if (cbAddRule.isChecked())
+//	{
+//	    resultIntent.putExtra(EXTRA_ADDRULE, true);
+//	    resultIntent.putExtra(EXTRA_REGEX, tvRegex.getText());
+//	}
+//
 	finish();
     }
     /* Called when one of the action radio buttons is clicked. */
