@@ -51,8 +51,12 @@ do
       end,
     }, urlStoreTab)
 end
-function _G.chosenAction(action, intent, addrule, regex)
+function _G.chosenAction(activity, action, intent, addrule, regex)
   toast("Chose action " .. tostring(action) .. ","..tostring(intent)..","..tostring(addrule)..","..tostring(regex))
+  if action == "open" then
+      toast("starting intent")
+      activity:startActivity(intent)
+  end
 end
 x = prefs["launchimm"]
 -- toast("Current mode: " .. x)

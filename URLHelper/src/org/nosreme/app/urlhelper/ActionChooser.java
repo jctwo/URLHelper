@@ -153,7 +153,7 @@ public class ActionChooser extends Activity
 	}
 	
         Spinner activitySpinner = (Spinner)findViewById(R.id.spinner_openwith);
-	lua.call("chosenAction", action,
+	lua.call("chosenAction", this, action,
 	         activitySpinner.getSelectedItem(),
 		 cbAddRule.isChecked(), tvRegex.getText());
 	
