@@ -62,7 +62,22 @@ function _G.chosenAction(activity, action, intent, addrule, regex)
       toast("expanding " .. url)
       runAsync(coroutine.create(function()
           local u = luajava.new(URL, url)
-          return u:toString() .. "test"
+          local conn = u:openConnection()
+          conn:setRequestMethod("HEAD")
+          conn:setInstanceFollowRedirects(false)
+	  -- See http://code.google.com/p/android/issues/detail?id=16227
+	  -- and http://code.google.com/p/android/issues/detail?id=24672
+	  -- for why the Accept-Encoding is required to disable gzip
+	  conn:setRequestProperty("Accept-Encoding", "identity")
+	  local resp = conn:getResponseCode()
+	  if resp == 301 or resp == 302 then
+	      local headers = conn:getHeaderFields()
+	      local locs = headers:get("location")
+	      if locs:size() == 1 then
+	        return locs:get(0)
+	      end
+	  end
+
       end), function (...)
          local t = table.pack(...)
          toast("resume "..tostring(t.n)..","..tostring(t[1])..","..tostring(t[2]))
