@@ -1,5 +1,7 @@
 local _G = _G
 
+local URL = luajava.bindClass("java.net.URL")
+
 do
     local Toast = luajava.bindClass("android.widget.Toast")
     local PreferenceManager = luajava.bindClass("android.preference.PreferenceManager")
@@ -52,11 +54,23 @@ do
     }, urlStoreTab)
 end
 function _G.chosenAction(activity, action, intent, addrule, regex)
-  toast("Chose action " .. tostring(action) .. ","..tostring(intent)..","..tostring(addrule)..","..tostring(regex))
-  if action == "open" then
+    if action == "open" then
       toast("starting intent")
       activity:startActivity(intent)
-  end
+  else if action == "expand" then
+      url = intent:getDataString()
+      toast("expanding " .. url)
+      runAsync(coroutine.create(function()
+          local u = luajava.new(URL, url)
+          return u:toString() .. "test"
+      end), function (...)
+         local t = table.pack(...)
+         toast("resume "..tostring(t.n)..","..tostring(t[1])..","..tostring(t[2]))
+      end, url)
+  else
+  toast("Chose action " .. tostring(action) .. ","..tostring(intent)..","..tostring(addrule)..","..tostring(regex))
+
+  end end
 end
 x = prefs["launchimm"]
 -- toast("Current mode: " .. x)

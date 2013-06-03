@@ -173,8 +173,12 @@ public class LuaEngine
 
 	public LuaValue call(LuaValue co, LuaValue post)
 	{
-	    new LuaAsyncTask().execute(co, post);
-	    return LuaValue.NIL;
+	    try {
+	        new LuaAsyncTask().execute(co, post);
+		return LuaValue.NIL;
+	    } catch (LuaError e) {
+		return CoerceJavaToLua.coerce(e.getMessage());
+ 	    }
 	    
 	}
 
