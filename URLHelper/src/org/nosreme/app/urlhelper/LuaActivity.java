@@ -26,7 +26,7 @@ public class LuaActivity extends Activity
 	    try
 	    {
 		lua.runStreamPrivileged(ctx.getResources().getAssets().open("lua/startup.lua"));
-	        lua.call("testact");
+	        lua.call("testact", intent.getData().getHost());
             }
 	    catch (IOException e)
 	    {

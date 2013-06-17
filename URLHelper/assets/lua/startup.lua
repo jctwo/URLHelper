@@ -102,6 +102,6 @@ y = tostring(y)
 prefs["luatest"] = y
 toast(y)
 end
-function _G.testact()
-  toast("testact")
+function _G.testact(arg)
+  toast("testact "..tostring(arg))
 end
