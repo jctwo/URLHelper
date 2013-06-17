@@ -28,7 +28,7 @@
 </activity>
         <activity android:exported="false" android:launchMode="standard" android:name="SettingsActivity"></activity>
         <activity android:exported="false" android:name="DetailsActivity"></activity>
-        <activity android:exported="false" android:name="LuaActivity" />
+        <activity android:exported="false" android:name="LuaActivity" android:theme="@android:style/Theme.NoDisplay"/>
         <activity android:theme="@android:style/Theme.Dialog" android:name="ActionChooser" android:exported="false"></activity>
         <activity android:theme="@android:style/Theme.NoDisplay" android:name=".URLOpenActivity">
                          <intent-filter>
