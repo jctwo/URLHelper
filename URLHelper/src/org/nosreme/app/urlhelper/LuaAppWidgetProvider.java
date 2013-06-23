@@ -23,14 +23,10 @@ public class LuaAppWidgetProvider extends AppWidgetProvider
 	    // to the button
 	    RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.url_controlwidget);
 	    views.setOnClickPendingIntent(R.id.luabutton, pendingIntent);
-	    // Tell the AppWidgetManager to perform an update on the current app widget
-	    appWidgetManager.updateAppWidget(appWidgetId, views);
-
+	 
 	    intent.setData(Uri.parse("lua://widget"));
 	    pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-	    // Get the layout for the App Widget and attach an on-click listener
-	    // to the button
-	    views = new RemoteViews(context.getPackageName(), R.layout.url_controlwidget);
+	    
 	    views.setOnClickPendingIntent(R.id.luabutton2, pendingIntent);
 	    // Tell the AppWidgetManager to perform an update on the current app widget
 	    appWidgetManager.updateAppWidget(appWidgetId, views);
