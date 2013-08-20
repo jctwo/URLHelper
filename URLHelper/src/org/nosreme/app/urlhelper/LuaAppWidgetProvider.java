@@ -17,7 +17,7 @@ public class LuaAppWidgetProvider extends AppWidgetProvider
 	    int appWidgetId = appWidgetIds[i];
 	    // Create an Intent to launch ExampleActivity
 	    Intent intent = new Intent(context, LuaActivity.class);
-	    intent.setData(Uri.parse("lua://testact"));
+	    intent.setData(Uri.parse("lua://chooseact"));
 	    PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 	    // Get the layout for the App Widget and attach an on-click listener
 	    // to the button

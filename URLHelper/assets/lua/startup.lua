@@ -1,6 +1,8 @@
 local _G = _G
 
 local URL = luajava.bindClass("java.net.URL")
+local Intent = luajava.bindClass("android.content.Intent")
+local Uri = luajava.bindClass("android.net.Uri")
 
 do
     local Toast = luajava.bindClass("android.widget.Toast")
@@ -102,6 +104,44 @@ y = tostring(y)
 prefs["luatest"] = y
 toast(y)
 end
-function _G.testact(arg)
+
+local function ask_default_browser(activity, arg)
+  toast("Ask for default browser")
+  if nil then return end
+  local intent = luajava.new(Intent)
+  local example = luajava.new(Intent)
+  
+
+    if nil then return end
+    uri = Uri:parse("http://www.example.com/")
+    --err, rest = pcall(example.setData, example, uri)
+    --toast("err="..tostring(err)..",rest="..tostring(rest))
+    if nil then return end
+  example:setData(uri)
+  if nil then return end
+  intent:setAction(Intent.ACTION_PICK_ACTIVITY)
+  
+  intent:putExtra(Intent.EXTRA_INTENT, example)
+  if nil then
+  activity:startActivityForResult(intent, 4)
+  else
+    toast("££")
+    err, rest = pcall(activity.startActivityForResult, activity, intent, 4)
+    toast("err="..tostring(err)..",rest="..tostring(rest))
+  end
+end
+
+local widgets = {
+    chooseact = ask_default_browser,
+}
+function _G.testact(arg, activity)
   toast("testact "..tostring(arg))
+  handler = widgets[arg]
+  if handler then handler(activity, arg) end
+end
+
+function _G.onActivityResult(code, result, data)
+  toast("onActivityResult("..tostring(code)..","..
+                          tostring(result)..","..
+                          tostring(data)..")")
 end

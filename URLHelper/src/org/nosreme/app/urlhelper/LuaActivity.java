@@ -10,11 +10,14 @@ public class LuaActivity extends Activity
 {
 
     private LuaEngine lua;
+    private int pendingResult = 0;
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
 	super.onCreate(savedInstanceState);
-
+	Toast t = Toast.makeText(getApplicationContext(), "lua activity", Toast.LENGTH_SHORT);
+	t.show();
+	
 	Intent intent = getIntent();
 	String urlString = intent.getDataString();
 
@@ -26,17 +29,35 @@ public class LuaActivity extends Activity
 	    try
 	    {
 		lua.runStreamPrivileged(ctx.getResources().getAssets().open("lua/startup.lua"));
-	        lua.call("testact", intent.getData().getHost());
+	        lua.call("testact", intent.getData().getHost(), this);
             }
 	    catch (IOException e)
 	    {
 		String result = "failed";
 		Toast t2 = Toast.makeText(ctx, result, Toast.LENGTH_LONG);
 		t2.show();
-	    }				
+	    }		
 
 	}
-        finish();
+        if (pendingResult == 0) {
+	    finish();
+	}
+    }
+    
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode, Bundle options)
+    {
+	pendingResult += 1;
+	super.startActivityForResult(intent, requestCode, options);
+    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	pendingResult -= 1;
+	    lua.call("onActivityResult", requestCode, resultCode, data);
+	
+        if (pendingResult == 0)
+	{
+	    finish();
+	}
     }
     
 }
