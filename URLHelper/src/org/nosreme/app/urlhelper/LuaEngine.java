@@ -89,7 +89,7 @@ public class LuaEngine
 	"rawset"};
     public LuaValue createGlobals()
     {
-	fullGlobals = JsePlatform.standardGlobals();
+	fullGlobals = JsePlatform.debugGlobals();
 
 	fullGlobals.package_.searchers.set(2, new assetSearcher(ctx.getAssets()));
 

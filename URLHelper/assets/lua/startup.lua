@@ -10,7 +10,7 @@ do
     local SharedPrefs = PreferenceManager:getDefaultSharedPreferences(ctx)
     
     function _G.toast(msg)
-      t = Toast:makeText(ctx, msg, Toast.LENGTH_SHORT)
+      t = Toast:makeText(ctx, msg, Toast.LENGTH_LONG)
       t:show()
     end
     
@@ -54,6 +54,22 @@ do
           
       end,
     }, urlStoreTab)
+    
+    function _G.debugwrap(f)
+        local function handler(msg)
+             --return msg
+            return tostring(debug.traceback)
+            --return debug.traceback(msg)
+        end
+        return function(...)
+            ok, results = xpcall(f, handler, ...)
+            if ok then
+                return results
+            else
+                toast(results)
+            end
+        end
+    end
 end
 function _G.chosenAction(activity, action, intent, addrule, regex)
     if action == "open" then
@@ -106,7 +122,7 @@ toast(y)
 end
 
 local function ask_default_browser(activity, arg)
-  toast("Ask for default browser")
+  -- toast("Ask for default browser")
   if nil then return end
   local intent = luajava.new(Intent)
   local example = luajava.new(Intent)
@@ -118,6 +134,7 @@ local function ask_default_browser(activity, arg)
     --toast("err="..tostring(err)..",rest="..tostring(rest))
     if nil then return end
   example:setData(uri)
+  example:setAction(Intent.ACTION_VIEW)
   if nil then return end
   intent:setAction(Intent.ACTION_PICK_ACTIVITY)
   
@@ -125,7 +142,6 @@ local function ask_default_browser(activity, arg)
   if nil then
   activity:startActivityForResult(intent, 4)
   else
-    toast("££")
     err, rest = pcall(activity.startActivityForResult, activity, intent, 4)
     toast("err="..tostring(err)..",rest="..tostring(rest))
   end
@@ -139,6 +155,7 @@ function _G.testact(arg, activity)
   handler = widgets[arg]
   if handler then handler(activity, arg) end
 end
+_G.testact = _G.debugwrap(_G.testact)
 
 function _G.onActivityResult(code, result, data)
   toast("onActivityResult("..tostring(code)..","..

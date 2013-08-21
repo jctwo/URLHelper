@@ -15,8 +15,9 @@ public class LuaActivity extends Activity
     public void onCreate(Bundle savedInstanceState)
     {
 	super.onCreate(savedInstanceState);
-	Toast t = Toast.makeText(getApplicationContext(), "lua activity", Toast.LENGTH_SHORT);
+	/*Toast t = Toast.makeText(getApplicationContext(), "lua activity", Toast.LENGTH_SHORT);
 	t.show();
+	*/
 	
 	Intent intent = getIntent();
 	String urlString = intent.getDataString();
