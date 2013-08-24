@@ -3,6 +3,7 @@ local _G = _G
 local URL = luajava.bindClass("java.net.URL")
 local Intent = luajava.bindClass("android.content.Intent")
 local Uri = luajava.bindClass("android.net.Uri")
+local ComponentName = luajava.bindClass("android.content.ComponentName")
 
 do
     local Toast = luajava.bindClass("android.widget.Toast")
@@ -158,7 +159,9 @@ end
 _G.testact = _G.debugwrap(_G.testact)
 
 function _G.onActivityResult(code, result, data)
-  toast("onActivityResult("..tostring(code)..","..
-                          tostring(result)..","..
-                          tostring(data)..")")
+  comp = data:getComponent()
+  compstr = comp:flattenToString()
+  toast("onActivityResult("..tostring(prefs.defaultBrowser)..
+                          "->"..compstr..")")
+  prefs.defaultBrowser = compstr
 end
