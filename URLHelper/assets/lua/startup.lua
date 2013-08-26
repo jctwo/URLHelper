@@ -59,7 +59,7 @@ do
     function _G.debugwrap(f)
         local function handler(msg)
              --return msg
-            return tostring(debug.traceback)
+            return msg .. "foo" --tostring(debug.traceback)
             --return debug.traceback(msg)
         end
         return function(...)
@@ -167,5 +167,9 @@ function _G.onActivityResult(code, result, data)
 end
 
 function _G.openurl(intent, act)
+  comp = ComponentName:unflattenFromString(prefs.defaultBrowser)
+  intent:setComponent(comp)
   toast(tostring(intent))
+  act:startActivity(intent)
 end
+_G.openurl = _G.debugwrap(_G.openurl)
