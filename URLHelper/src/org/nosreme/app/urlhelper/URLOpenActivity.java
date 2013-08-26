@@ -24,6 +24,7 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
+import java.io.IOException;
 
 public class URLOpenActivity extends ListActivity {
 	private final int REQ_CHOOSE_ACTION = 0;
@@ -31,6 +32,8 @@ public class URLOpenActivity extends ListActivity {
 	private String intentOptionsStr = null;
 	
 	private Intent origIntent = null;
+	
+	private LuaEngine lua;
 	
 	/* Launch an item, expanding if configured and necessary. */
 	/* Launch a URL using the configured browser. */
@@ -209,6 +212,23 @@ public class URLOpenActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 	        
 		super.onCreate(savedInstanceState);
+		
+	    Context ctx = getApplicationContext();
+	    lua = new LuaEngine(ctx);
+		// Factor out this initialisation into common method
+	    try
+	    {
+		lua.runStreamPrivileged(ctx.getResources().getAssets().open("lua/startup.lua"));
+	        lua.call("openurl", getIntent(), this);
+            }
+	    catch (IOException e)
+	    {
+		String result = "failed";
+		Toast t2 = Toast.makeText(ctx, result, Toast.LENGTH_LONG);
+		t2.show();
+	    }
+	    finish();
+	    if (ctx != null) return;
 
 	    Log.v("urlopen", "On create");
 		/* Check whether we're in offline mode. */

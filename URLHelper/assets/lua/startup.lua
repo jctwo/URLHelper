@@ -165,3 +165,7 @@ function _G.onActivityResult(code, result, data)
                           "->"..compstr..")")
   prefs.defaultBrowser = compstr
 end
+
+function _G.openurl(intent, act)
+  toast(tostring(intent))
+end
